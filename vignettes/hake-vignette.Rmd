@@ -1,6 +1,6 @@
 ---
 title: "Example: Namibian Hake"
-author: "Steven Martell"
+author: "Steve Martell"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette 
 vignette: >
@@ -34,7 +34,7 @@ Given a valid `sID' object, you can quickly run the age-structured model and pre
 
 ```{r}
 	hake <- runModel(hake)
-	print(hake)
+	str(hake)
 ```
 
 
@@ -85,3 +85,4 @@ qplot(hake$year,hake$bt,geom="line")
 Hilborn, R. and Mangel, M. (1997). The ecological detective: confronting models with data. Princeton Univ Pr.
 
 Martell, S. and Froese, R. (2012). A simple method for estimating msy from catch and resilience. Fish and Fisheries.
+
