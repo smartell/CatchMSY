@@ -1,0 +1,24 @@
+Package: catchMSY
+Type: Package
+Title: Catch-MSY method for estimating MSY-based reference points.
+Version: 0.1
+Date: 2015-09-05
+Author: Steven Martell
+Maintainer: Steven Martell <martell.steve@gmail.com>
+Description: This package contains several scripts and routines for conducting 
+             fisheris stock assessment based on the simple Catch-MSY method 
+             developed by  Martell and Froese (2012).
+License: GPL (>= 2)
+Imports: Rcpp (>= 0.11.6),
+		 dplyr,
+		 ggplot2,
+		 foreach,
+		 doMC,
+		 GGally,
+		 tools,
+		 mvtnorm,
+		 microbenchmark
+LinkingTo: Rcpp
+Suggests: knitr,
+    testthat
+VignetteBuilder: knitr
