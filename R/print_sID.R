@@ -1,5 +1,5 @@
 #' Print sid object
-
+#' @export
 print.sid <- function(object, ...)
 {
 	h <- object$reck/(object$reck+4)

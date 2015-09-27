@@ -8,7 +8,7 @@
 calcAgeSchedules <- function(sID)
 {
 	within(sID,{
-	     la <- linf*(1.0-exp(-vbk*age))
+	     la <- linf*(1.0-exp(-vbk*(age-to)))
 	     wa <- a*la^b
 	     ma <- plogis(age,ah,gh)
 	     fa <- wa*ma
