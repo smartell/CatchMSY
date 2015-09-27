@@ -1,3 +1,7 @@
+#' Calculate negative loglikelihood for relative abundance index.
+#' @details  Computes the negative loglikelihood of the relative abundance index and adds
+#'  nll.index to the sID object.
+#' @return NULL
 calcNllIndex <- function(sID)
 {
 	within(sID,{
@@ -8,6 +12,19 @@ calcNllIndex <- function(sID)
 		.zbar     <- mean(.zt)
 		nll.index <- -1.0 * sum(dnorm(.zt,.zbar,.lse,log=TRUE))
 	})
+}
+
+#' Calculate negative loglikelihood for absolute abundance.
+#' 
+#' 
+calcNLLAbsoluteBiomass <- function(sID)
+{
+  within(sID,{
+    # likelihood for absolutee abundance data.
+    .absBt    <- data$biomass
+    .lse      <- data$biomass.lse
+    
+  })
 }
 
 #'Prior density for each parameter
@@ -30,7 +47,7 @@ calcPrior <- function(sID)
 
 
 #' Compute the objective function.
-#' @details Computes the objective function for Importance Sampling.
+#' @details Computes the objective function for Importance Sampling or non-linear parameter estimation.
 #' 
 #' @return sID object
 calcObjectiveFunc <- function(sID)

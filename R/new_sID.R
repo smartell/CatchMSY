@@ -72,8 +72,11 @@ new_sID <- function(id  = "Stock Label",
 	df <- data.frame("year"=1,
 	                 "catch"=1,
 	                 "index"=1,
-	                 "avgSize"=1
-	                 )
+                    "index.lse"=0.1,
+                    "biomass"=NA,
+                    "biomass.lse"=NA,
+                    "avgSize"=NA
+                   )
 	
 	
 	if(file.exists(dfile)){
