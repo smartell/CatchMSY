@@ -1,8 +1,11 @@
-#' @name catchMSY
+#' catchMSY: A package for implementing the catch-MSY method.
 #'
-#' @title \packageTitle{catchMSY}
+#'
 #' 
-#' @details The DESCRIPTION file:
-#'          \packageDescription{catchMSY}
+#' @section catchMSY functions:
+#' The foo functions ...
 #'
+#' @docType package
+#' @name catchMSY
 NULL
+#> NULL

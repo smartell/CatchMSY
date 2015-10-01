@@ -6,7 +6,7 @@
 \usage{
 new_sID(id = "Stock Label", age = 1:10, linf = 100, winf = 5,
   vbk = 0.2, to = 0, a = 5e-06, b = 3, mat_age_50 = 2,
-  mat_age_95 = 3, dfile = "")
+  mat_age_95 = 3, m = 0.2, fmsy = 0.15, msy = 1, dfile = "")
 }
 \arguments{
 \item{id}{Name of Stock}

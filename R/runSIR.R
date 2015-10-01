@@ -1,5 +1,7 @@
-#' Run Sample Imporance Resample routine.
+#' Run Importance Sampling
 #' @param sID is the stock object
+#' @param n number of samples
+#' @param nc number of cores
 #' @export
 #'
 runSIR <- function(sID,n=100,nc=1)
@@ -14,23 +16,61 @@ runSIR <- function(sID,n=100,nc=1)
 		colnames(T) <- paste0("log.",names(mu))
 
 		# shared memory parallelism
-		registerDoMC(nc)
+		doMC::registerDoMC(nc)
 
 		.results <- foreach(i = 1:n) %dopar% {
 			sID$m    = exp(T[i,1])
 			sID$fmsy = exp(T[i,2])
 			sID$msy  = exp(T[i,3])
 			
-			.runModel(sID)
+			runModel(sID)
 		}
 
 
-		wtC    <- ldply(.results,function(x){c("log.wts"=x[['log.wt']],"code"=x[['ell']])})
+		wtC    <- plyr::ldply(.results,function(x){c("log.wts"=x[['log.wt']],"code"=x[['ell']])})
 		wts    <- exp(wtC$log.wt)
 		idx    <- sample(1:n,n,replace=TRUE,prob=wts)
 		sID$ps <- data.frame(T[idx,],wtC[idx,])
 
 		class(sID) <- c(class(sID),"sir")
 		return(sID)
+	})
+}
+
+#' Interval Sample
+#' Draw from the dfPriorInfo
+#' @export
+IS <- function(sID,n=100,nc=1)
+{
+	with(sID,{
+		S <- NULL
+		for(.i in 1:3)
+		{
+			.fn <- paste0("r",dfPriorInfo$dist[.i])
+			.p1 <- dfPriorInfo$par1[.i]
+			.p2 <- dfPriorInfo$par2[.i]
+			
+			.xx <-  do.call(.fn,list(n,.p1,.p2))
+			S   <- cbind(S,.xx)
+		}
+		
+		#shared memory parallelism
+		doMC::registerDoMC(nc)
+
+		.results <- foreach(.i=1:n) %dopar%{
+			sID$m    = (S[.i,1])
+			sID$fmsy = (S[.i,2])
+			sID$msy  = (S[.i,3])
+			
+			runModel(sID)
+		}
+
+		codes  <- plyr::ldply(.results,function(x){c("code"=x[['code']])})
+		# wtC    <- plyr::ldply(.results,function(x){
+					# c("log.wts"=x[['log.wt']],
+					  # "code"=x[['code']],
+					  # "depletion"=x[['depletion']])})
+
+		return(.results)
 	})
 }

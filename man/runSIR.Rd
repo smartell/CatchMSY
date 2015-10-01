@@ -2,14 +2,18 @@
 % Please edit documentation in R/runSIR.R
 \name{runSIR}
 \alias{runSIR}
-\title{Run Sample Imporance Resample routine.}
+\title{Run Importance Sampling}
 \usage{
 runSIR(sID, n = 100, nc = 1)
 }
 \arguments{
 \item{sID}{is the stock object}
+
+\item{n}{number of samples}
+
+\item{nc}{number of cores}
 }
 \description{
-Run Sample Imporance Resample routine.
+Run Importance Sampling
 }
 

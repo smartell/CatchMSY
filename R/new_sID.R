@@ -11,16 +11,19 @@
 #'
 #' @export
 new_sID <- function(id  = "Stock Label",
-                    age = 1:10,
-                    linf = 100,
-                    winf = 5.0,
-                    vbk  = 0.2,
-                    to   = 0.0,
-                    a    = 5e-6,
-                    b    = 3.0,
-                    mat_age_50  = 2.0,
-                    mat_age_95  = 3.0,
-                    dfile="")
+					age = 1:10,
+					linf = 100,
+					winf = 5.0,
+					vbk  = 0.2,
+					to   = 0.0,
+					a    = 5e-6,
+					b    = 3.0,
+					mat_age_50  = 2.0,
+					mat_age_95  = 3.0,
+					m    = 0.2,
+					fmsy = 0.15,
+					msy  = 1.0,
+					dfile="")
 {
 	S     <- list()
 	S$id  <- id
@@ -42,18 +45,18 @@ new_sID <- function(id  = "Stock Label",
 	S$sel50 <- 2.0
 	S$sel95 <- 5.0
 
-	# population parameters
-	S$m    <- 0.15
-	S$fmsy <- 0.25
-	S$msy  <- 265.
+	# population parameters starting values
+	S$m    <- m
+	S$fmsy <- fmsy
+	S$msy  <- msy
 
 	# data frame for parameter priors
 	S$dfPriorInfo <- data.frame(id=1:3,
-      dist=c("lnorm","unif","norm"),
-      par1=c(log(0.2),0,S$msy),
-      par2=c(0.01,1.0,0.2*S$msy),
-      log = TRUE,
-      stringAsFactors=FALSE)
+	  dist=c("lnorm","unif","norm"),
+	  par1=c(log(0.2),0,S$msy),
+	  par2=c(0.01,1.0,0.2*S$msy),
+	  log = TRUE,
+	  stringAsFactors=FALSE)
 
 
 	# vector of parameters for prior samples
@@ -70,20 +73,17 @@ new_sID <- function(id  = "Stock Label",
 
 	# DATA FRAME TEMPLATE FOR TIME SERIES DATA	
 	df <- data.frame("year"=1,
-	                 "catch"=1,
-	                 "index"=1,
-                    "index.lse"=0.1,
-                    "biomass"=NA,
-                    "biomass.lse"=NA,
-                    "avgSize"=NA
-                   )
+					 "catch"=1,
+					 "index"=1,
+					 "index.lse"=0.1,
+					 "biomass"=NA,
+					 "biomass.lse"=NA,
+					 "avgSize"=NA
+					)
 	
 	
 	if(file.exists(dfile)){
 		S$data <- read.table(dfile,header=TRUE)
-
-		# bn <- sub("\\.[[:alnum:]]+$", "",dfile)
-		# save(S,file=paste0(bn,".rda"))	
 	} else {
 		S$data <- df
 	}

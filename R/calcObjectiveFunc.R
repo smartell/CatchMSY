@@ -10,7 +10,9 @@ calcNllIndex <- function(sID)
 		.lse      <- data$index.lse
 		.zt       <- log(.index) - log(bt)
 		.zbar     <- mean(.zt)
-		nll.index <- -1.0 * sum(dnorm(.zt,.zbar,.lse,log=TRUE))
+		epsilon   <- (.zt - .zbar)/.lse
+		it_hat    <- exp(.zbar) * bt
+		nll.relIndex <- -1.0 * sum(dnorm(.zt,.zbar,.lse,log=TRUE))
 	})
 }
 
@@ -23,7 +25,8 @@ calcNLLAbsoluteBiomass <- function(sID)
     # likelihood for absolutee abundance data.
     .absBt    <- data$biomass
     .lse      <- data$biomass.lse
-    
+    .zt       <- log(.absBt) - log(bt)
+    nll.absIndex <- -1.0 * sum(dnorm(.zt,0,.lse,log=TRUE))
   })
 }
 
@@ -34,13 +37,13 @@ calcPrior <- function(sID)
 		# prior for parameters
 		.x    <- c(m,fmsy,msy)
 		pvec <- rep(0,length=3)
-		for(i in 1:3)
+		for(.i in 1:3)
 		{
-			.fn <- paste0("d",dfPriorInfo$dist[i])
-			.p1 <- dfPriorInfo$par1[i]
-			.p2 <- dfPriorInfo$par2[i]
-			.p3 <- dfPriorInfo$log[i]
-			pvec[i] <- -1.0 * do.call(.fn,list(.x[i],.p1,.p2,.p3))
+			.fn <- paste0("d",dfPriorInfo$dist[.i])
+			.p1 <- dfPriorInfo$par1[.i]
+			.p2 <- dfPriorInfo$par2[.i]
+			.p3 <- dfPriorInfo$log[.i]
+			pvec[.i] <- -1.0 * do.call(.fn,list(.x[.i],.p1,.p2,.p3))
 		}
 	})
 }
@@ -57,17 +60,23 @@ calcObjectiveFunc <- function(sID)
 
 	# Bernoulli likelihood for stock extinction.
 	within(sID,{
-		# ell is the object for pass (0), fail (!0)
+		# code is the object for pass (0), fail (!0)
 		p.vec <- rep(0,length=1)
 
-		# CONVERGENCE CODES (ell)
-		ell   <- 0
+		# CONVERGENCE CODES (code)
+		code   <- 0
 		# check for extinction
-		if(min(sbt,na.rm=TRUE) <= 0 ) { ell <- 1 }
+		if(min(sbt,na.rm=TRUE) <= 0 ) { code <- 1 }
 
 		# check for infinite biomass
-		if(any(is.infinite(sbt)))	  { ell <- 2 }
+		if(any(is.infinite(sbt)))	  { code <- 2 }
 		
+		# check for lower bound tolerance
+		if(depletion <= lb.depletion) { code <- 3 }
+
+		# check for upper bound depletion tolerance
+		if(depletion >= ub.depletion) { code <- 4 }
+
 
 		# Importance function:
 		# negative log of multivariate-t dist.
@@ -80,7 +89,7 @@ calcObjectiveFunc <- function(sID)
 		p.vec[1] <- -1.0 * dunif(depletion,lb.depletion,ub.depletion,log=TRUE)
 		
 
-		nll    <- nll.index + sum(pvec)
+		nll    <- nll.relIndex + sum(pvec)
 		log.wt <- -nll + p.theta
 		# log.wt    <- -(nll.index+sum(p.vec)) + p.theta 
 		if(is.na(log.wt)) log.wt <- -Inf

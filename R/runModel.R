@@ -34,6 +34,10 @@ solver <- function(sID)
 		mu     <- .fit$par
 		sd     <- sqrt(diag(V))
 		R      <- V / (sd %o% sd)
+		m      <- mu[1]
+		fmsy   <- mu[2]
+		msy    <- mu[3]
+		sID    <- runModel(sID)
 		return(sID)
 	})
 }
