@@ -25,3 +25,20 @@ One devtools is installed you can install the catchMSY package directly from git
 
 ## Vignettes
 You can build all vignettes from the console with devtools::build() to create a package bundle with the vignettes included. RStudio’s “Build & reload” does not build vignettes to save time. Similarly, devtools::install_github() (and friends) will not build vignettes by default because they’re time consuming and may require additional packages. You can force building with devtools::install_github(build_vignettes = TRUE). This will also install all suggested packages.
+
+---
+## Workflow for building the catchMSY package
+
+### Using the makefile
+From the terminal navigate to the directory containg the catchMSY pacakge.
+
+	make clean
+	make 
+	make install
+	
+
+
+
+Using the devtools package for building the catchMSY package.
+
+	devtools::load_all()

@@ -1,10 +1,10 @@
 #hake.R
 # load the catchMSY library
 library(catchMSY)
-library(ggplot2)
-library(tidyr)
-library(mvtnorm)
-library(foreach)
+# library(ggplot2)
+# library(tidyr)
+# library(mvtnorm)
+# library(foreach)
 
 
 

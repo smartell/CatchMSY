@@ -38,6 +38,11 @@ Given a valid `sID' object, you can quickly run the age-structured model and pre
 ```
 
 
+```{r, echo=FALSE, results='asis'}
+library(catchMSY)
+data(NamibianHake)
+knitr::kable(head(hake$data, 10))
+```
 ### Input data and Stock ID
 
 

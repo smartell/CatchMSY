@@ -5,11 +5,11 @@
 #' @return A template for a stock class object.
 #' @details This function returns a list object containing all the necessary
 #'          information to run the catchMSY routines.  
-#' @examples 
-#' #myStock <- new_sID()
-#' #names(myStock)
-#'
 #' @export
+#'
+#' @examples 
+#' myStock <- new_sID()
+#' names(myStock)
 new_sID <- function(id  = "Stock Label",
 					age = 1:10,
 					linf = 100,

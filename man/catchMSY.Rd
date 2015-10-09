@@ -6,10 +6,14 @@
 \alias{catchMSY-package}
 \title{catchMSY: A package for implementing the catch-MSY method.}
 \description{
-catchMSY: A package for implementing the catch-MSY method.
+\packageDESCRIPTION{catchMSY}
 }
 \section{catchMSY functions}{
 
 The foo functions ...
 }
+\author{
+\packageAuthor{catchMSY}
+}
+\keyword{catchMSY}
 

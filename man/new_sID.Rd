@@ -24,7 +24,7 @@ This function returns a list object containing all the necessary
          information to run the catchMSY routines.
 }
 \examples{
-#myStock <- new_sID()
-#names(myStock)
+myStock <- new_sID()
+names(myStock)
 }
 
