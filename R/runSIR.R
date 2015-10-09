@@ -42,13 +42,14 @@ runSIR <- function(sID,n=100,nc=1)
 #' @export
 IS <- function(sID,n=100,nc=1)
 {
+
 	with(sID,{
 		S <- NULL
-		for(.i in 1:3)
+		for(i in 1:3)
 		{
-			.fn <- paste0("r",dfPriorInfo$dist[.i])
-			.p1 <- dfPriorInfo$par1[.i]
-			.p2 <- dfPriorInfo$par2[.i]
+			.fn <- paste0("r",dfPriorInfo$dist[i])
+			.p1 <- dfPriorInfo$par1[i]
+			.p2 <- dfPriorInfo$par2[i]
 			
 			.xx <-  do.call(.fn,list(n,.p1,.p2))
 			S   <- cbind(S,.xx)
@@ -57,10 +58,10 @@ IS <- function(sID,n=100,nc=1)
 		#shared memory parallelism
 		doMC::registerDoMC(nc)
 
-		.results <- foreach(.i=1:n) %dopar%{
-			sID$m    = (S[.i,1])
-			sID$fmsy = (S[.i,2])
-			sID$msy  = (S[.i,3])
+		.results <- foreach(ip=1:n) %dopar%{
+			sID$m    = (S[ip,1])
+			sID$fmsy = (S[ip,2])
+			sID$msy  = (S[ip,3])
 			
 			runModel(sID)
 		}

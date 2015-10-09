@@ -19,7 +19,7 @@ Imports:
 	microbenchmark,
 	Rcpp,
 	tidyr,
-	tools,
+	tools
 LinkingTo: Rcpp
 Suggests: 
 	knitr,
