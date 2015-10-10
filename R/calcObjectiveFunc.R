@@ -1,6 +1,6 @@
 #' Calculate negative loglikelihood for relative abundance index.
-#' @details  Computes the negative loglikelihood of the relative abundance index and adds
-#'  nll.index to the sID object.
+#' @details  Computes the negative loglikelihood of the relative abundance index 
+#'  		 and adds nll.index to the sID object.
 #' @return NULL
 calcNllIndex <- function(sID)
 {
@@ -50,7 +50,8 @@ calcPrior <- function(sID)
 
 
 #' Compute the objective function.
-#' @details Computes the objective function for Importance Sampling or non-linear parameter estimation.
+#' @details Computes the objective function for Importance Sampling or 
+#'			non-linear parameter estimation.
 #' 
 #' @return sID object
 calcObjectiveFunc <- function(sID)

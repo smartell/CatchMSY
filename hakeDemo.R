@@ -1,10 +1,10 @@
 #hake.R
 # load the catchMSY library
 library(catchMSY)
-# library(tidyr)
-# library(ggplot2)
-# library(mvtnorm)
-# library(foreach)
+library(tidyr)
+library(ggplot2)
+library(mvtnorm)
+library(foreach)
 
 
 
@@ -13,9 +13,11 @@ library(catchMSY)
 # TEST CATCH ONLY METHOD USING hake0
 # 
 load("Hake_0.rda")
-hake0 <- runModel(hake0)
+hake0 <- sample.sid(hake0)
+hake0 <- sir.sid(hake0)
+# hake0 <- runModel(hake0)
+# plot(hake0)
 
-plot(hake0)
 
 
 

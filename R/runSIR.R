@@ -37,6 +37,48 @@ runSIR <- function(sID,n=100,nc=1)
 	})
 }
 
+
+#' Generate prior samples for importance sampling.
+sample.sid <- function(sID,n=100)
+{
+	within(sID,{
+		S <- NULL
+		for(.i in 1:3)
+		{
+			.fn <- paste0("r",dfPriorInfo$dist[.i])
+			.p1 <- dfPriorInfo$par1[.i]
+			.p2 <- dfPriorInfo$par2[.i]
+			
+			.xx <-  do.call(.fn,list(n,.p1,.p2))
+
+			S   <- cbind(S,.xx)
+		}
+		colnames(S) <- c("m","fmsy","msy")
+	})
+}
+
+
+sir.sid <- function(sID)
+{
+	with(sID,{
+		n    <- dim(S)[1]
+		cmsy <- NULL
+		for(i in 1:n)
+		{
+			sID$m    <- S[i,1]
+			sID$fmsy <- S[i,2]
+			sID$msy  <- S[i,3]
+			cmsy <- c(cmsy,catchMSYModel(sID))
+		}
+		
+		code  <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
+		sID$S <- cbind(S,code)
+		return(cmsy)
+	})
+}
+
+
+
 #' Interval Sample
 #' Draw from the dfPriorInfo
 #' @export
