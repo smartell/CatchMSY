@@ -58,7 +58,7 @@ catchMSYModel <- function(sID)
 		names(data) <- tolower(names(data))
 		year <- data$year
 		chat <- data$catch
-		cpue <- data$index
+		# cpue <- data$index
 		nyr  <- length(year)
 		
 
@@ -132,19 +132,17 @@ catchMSYModel <- function(sID)
 		}
 
 		# Absolute biomass index.
-		if( code == 0 && any(!is.na(data$biomass)) ) {
-			print("Biomass observations")
-			ii     <- which(!is.na(data$biomass))
-			.it    <- log(data$biomass[ii])
-			.bt    <- log(bt[ii])
-			.se    <- data$biomass.lse[ii]
-			print(.it)
-			print(.bt)
-			print(.se)
-			nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
+		if(with(hake$data,exists("biomass"))){
+			if( code == 0 && any(!is.na(data$biomass)) ) {
+				ii     <- which(!is.na(data$biomass))
+				.it    <- log(data$biomass[ii])
+				.bt    <- log(bt[ii])
+				.se    <- data$biomass.lse[ii]
+				nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
+			}
 		}
-
-		out <- list(code=code,nll=sum(nll),dt=dt,bt=bt,sbt=sbt,ft=ft)
+		
+		out <- list(code=code,nll=sum(nll,na.rm=TRUE),dt=dt,bt=bt,sbt=sbt,ft=ft)
 		return(out)
 	})
 }
