@@ -13,6 +13,7 @@ sID object
 Compute the objective function.
 }
 \details{
-Computes the objective function for Importance Sampling or non-linear parameter estimation.
+Computes the objective function for Importance Sampling or
+			non-linear parameter estimation.
 }
 

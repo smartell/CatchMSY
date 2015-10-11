@@ -80,6 +80,7 @@ catchMSYModel <- function(sID)
 		
 		bt  <- as.vector(N %*% (va*wa))
 		sbt <- as.vector(N %*% fa)
+		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
 
 		# calcObjectiveFunction
@@ -87,10 +88,10 @@ catchMSYModel <- function(sID)
 		code <- 0
 
 		# check for extinction
-		if(min(sbt,na.rm=TRUE) <= 0 ) { code <- 1 }
+		if( any(is.na(sbt)) ) { code <- 1 }
 
 		# check for infinite biomass
-		if(any(is.infinite(sbt)))	  { code <- 2 }
+		if( any(is.infinite(sbt)) )	  { code <- 2 }
 		
 		# check for lower bound tolerance
 		if(!is.na(depletion) && depletion <= lb.depletion) { code <- 3 }
@@ -98,7 +99,12 @@ catchMSYModel <- function(sID)
 		# check for upper bound depletion tolerance
 		if(!is.na(depletion) && depletion >= ub.depletion) { code <- 4 }
 
-		out <- list(code=code,depletion=depletion,bt=bt,sbt=sbt,ft=ft)
+		# check bounds for ft.
+		if( max(ft,na.rm=TRUE) > 5.0 
+		   || any(is.infinite(ft)) 
+		   || min(ft,na.rm=TRUE) < 0 ) { code <- 5}
+
+		out <- list(code=code,dt=dt,bt=bt,sbt=sbt,ft=ft)
 		return(out)
 	})
 }

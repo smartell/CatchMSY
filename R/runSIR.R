@@ -39,6 +39,7 @@ runSIR <- function(sID,n=100,nc=1)
 
 
 #' Generate prior samples for importance sampling.
+#' @export
 sample.sid <- function(sID,n=100)
 {
 	within(sID,{
@@ -58,22 +59,45 @@ sample.sid <- function(sID,n=100)
 }
 
 
-sir.sid <- function(sID)
+#' Importance Sampling
+#' @export
+sir.sid <- function(sID,nc=1)
 {
 	with(sID,{
 		n    <- dim(S)[1]
-		cmsy <- NULL
-		for(i in 1:n)
-		{
+		# cmsy <- NULL
+		# for(i in 1:n)
+		# {
+		# 	sID$m    <- S[i,1]
+		# 	sID$fmsy <- S[i,2]
+		# 	sID$msy  <- S[i,3]
+		# 	cmsy <- c(cmsy,catchMSYModel(sID))
+		# }
+		#shared memory parallelism
+		doMC::registerDoMC(nc)
+
+		.results <- foreach(i = 1:n) %dopar% {
 			sID$m    <- S[i,1]
 			sID$fmsy <- S[i,2]
 			sID$msy  <- S[i,3]
-			cmsy <- c(cmsy,catchMSYModel(sID))
+			return(catchMSYModel(sID))
 		}
-		
-		code  <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
-		sID$S <- cbind(S,code)
-		return(cmsy)
+		cmsy  <- .results
+
+		# fn <- function(s){
+		# 	sID$m    <- s[1]
+		# 	sID$fmsy <- s[2]
+		# 	sID$msy  <- s[3]
+		# 	return(catchMSYModel(sID))
+		# }
+		# cmsy  <- apply(S,1,fn)
+
+		sID$code   <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
+		sID$ps.bt  <- plyr::ldply(cmsy,function(x){c("bt"=x[['bt']])})
+		sID$ps.dt  <- plyr::ldply(cmsy,function(x){c("dt"=x[['dt']])})
+		sID$ps.sbt <- plyr::ldply(cmsy,function(x){c("sbt"=x[['sbt']])})
+		sID$ps.ft  <- plyr::ldply(cmsy,function(x){c("ft"=x[['ft']])})
+		return(sID)
 	})
 }
 

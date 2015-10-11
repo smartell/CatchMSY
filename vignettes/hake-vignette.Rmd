@@ -52,7 +52,7 @@ The stock ID object for this example is included in the `catchMSY` package, and 
 
 
 
-The \code{catchMSY} package is intended to be used to determine MSY-based reference points.
+The `catchMSY` package is intended to be used to determine MSY-based reference points.
 
 The catchMSY package is based on the initial work for Martell and Froese (2012). "A simple method for estimating MSY from catch and resilience".
 
