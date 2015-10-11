@@ -1,3 +1,6 @@
+#' Age-structured Catch-MSY model
+#' @param sID Stock ID object
+#' @export
 catchMSYModel <- function(sID)
 {
 	with(sID,{
@@ -83,8 +86,10 @@ catchMSYModel <- function(sID)
 		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
 
-		# calcObjectiveFunction
-		# non-statistical criterion
+		
+		#----------------------------------------------#
+		# NON-STATISTICAL CRITERION                    #
+		#----------------------------------------------#
 		code <- 0
 
 		# check for extinction
@@ -104,7 +109,42 @@ catchMSYModel <- function(sID)
 		   || any(is.infinite(ft)) 
 		   || min(ft,na.rm=TRUE) < 0 ) { code <- 5}
 
-		out <- list(code=code,dt=dt,bt=bt,sbt=sbt,ft=ft)
+
+		#----------------------------------------------#
+		# STATISTICAL CRITERION                        #
+		#----------------------------------------------#
+		nll <- rep(NA,length=2)
+
+		# Relative abundance (trend info)
+		# If code==0, and abundance data exists, compute nll
+		if( code == 0 && any(!is.na(data$index)) ) {
+			 ii <- which(!is.na(data$index))
+			.it <- data$index[ii]
+			.se <- data$index.lse[ii]
+			if(length(.it)>1){
+				.zt    <- log(.it) - log(bt[ii])
+				.zbar  <- mean(.zt)
+				nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
+			}
+			else{
+				cat("There is insufficient data to fit to trends.")
+			}
+		}
+
+		# Absolute biomass index.
+		if( code == 0 && any(!is.na(data$biomass)) ) {
+			print("Biomass observations")
+			ii     <- which(!is.na(data$biomass))
+			.it    <- log(data$biomass[ii])
+			.bt    <- log(bt[ii])
+			.se    <- data$biomass.lse[ii]
+			print(.it)
+			print(.bt)
+			print(.se)
+			nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
+		}
+
+		out <- list(code=code,nll=sum(nll),dt=dt,bt=bt,sbt=sbt,ft=ft)
 		return(out)
 	})
 }

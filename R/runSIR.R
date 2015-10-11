@@ -60,6 +60,8 @@ sample.sid <- function(sID,n=100)
 
 
 #' Importance Sampling
+#' @param sID Stock ID object
+#' @param nc  Number of cores for parrallel processing.
 #' @export
 sir.sid <- function(sID,nc=1)
 {
@@ -93,6 +95,7 @@ sir.sid <- function(sID,nc=1)
 		# cmsy  <- apply(S,1,fn)
 
 		sID$code   <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
+		sID$nll    <- plyr::ldply(cmsy,function(x){c("nll"=x[['nll']])})
 		sID$ps.bt  <- plyr::ldply(cmsy,function(x){c("bt"=x[['bt']])})
 		sID$ps.dt  <- plyr::ldply(cmsy,function(x){c("dt"=x[['dt']])})
 		sID$ps.sbt <- plyr::ldply(cmsy,function(x){c("sbt"=x[['sbt']])})
