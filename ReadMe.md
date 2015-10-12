@@ -44,8 +44,13 @@ Using the devtools package for building the catchMSY package.
 
 	devtools::load_all()
 
-# TO DO LIST
+----
+### To do
 - [ ] fix non-linear search routine
 - [ ] Create S3 ploting routines for sID class
+- [ ] Add nll for average weight.
+- [ ] add nll for change in mean length.
+- [ ] add the importance function for statistical SIR
 
+----
 
