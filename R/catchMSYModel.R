@@ -115,34 +115,56 @@ catchMSYModel <- function(sID)
 		#----------------------------------------------#
 		nll <- rep(NA,length=2)
 
-		# Relative abundance (trend info)
-		# If code==0, and abundance data exists, compute nll
-		if( code == 0 && any(!is.na(data$index)) ) {
-			 ii <- which(!is.na(data$index))
-			.it <- data$index[ii]
-			.se <- data$index.lse[ii]
-			if(length(.it)>1){
-				.zt    <- log(.it) - log(bt[ii])
-				.zbar  <- mean(.zt)
-				nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
+		# Must first pass the non-statistical criterion.
+		if( code == 0 ){
+			# Relative abundance (trend info)
+			# If code==0, and abundance data exists, compute nll
+			if( any(!is.na(data$index)) ) {
+				 ii <- which(!is.na(data$index))
+				.it <- data$index[ii]
+				.se <- data$index.lse[ii]
+				if(length(.it)>1){
+					.zt    <- log(.it) - log(bt[ii])
+					.zbar  <- mean(.zt)
+					nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
+				}
+				else{
+					cat("There is insufficient data to fit to trends.")
+				}
 			}
-			else{
-				cat("There is insufficient data to fit to trends.")
-			}
-		}
 
-		# Absolute biomass index.
-		if(with(hake$data,exists("biomass"))){
-			if( code == 0 && any(!is.na(data$biomass)) ) {
-				ii     <- which(!is.na(data$biomass))
-				.it    <- log(data$biomass[ii])
-				.bt    <- log(bt[ii])
-				.se    <- data$biomass.lse[ii]
-				nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
+			# Absolute biomass index.
+			if(with(hake$data,exists("biomass"))){
+				if( any(!is.na(data$biomass)) ) {
+					ii     <- which(!is.na(data$biomass))
+					.it    <- log(data$biomass[ii])
+					.bt    <- log(bt[ii])
+					.se    <- data$biomass.lse[ii]
+					nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
+				}
 			}
 		}
 		
-		out <- list(code=code,nll=sum(nll,na.rm=TRUE),dt=dt,bt=bt,sbt=sbt,ft=ft)
+		# -------------------------------------------- #
+		# PRIORS                                       #
+		# -------------------------------------------- #
+		pvec <- rep(NA,length=3)
+		# prior for parameters
+		.x    <- c(m,fmsy,msy)
+		pvec <- rep(0,length=3)
+		for(.i in 1:3)
+		{
+			.fn <- paste0("d",dfPriorInfo$dist[.i])
+			.p1 <- dfPriorInfo$par1[.i]
+			.p2 <- dfPriorInfo$par2[.i]
+			.p3 <- dfPriorInfo$log[.i]
+			pvec[.i] <- -1.0*do.call(.fn,list(.x[.i],.p1,.p2,.p3))
+		}
+		
+		out <- list(code=code,
+		            nll=sum(nll,na.rm=TRUE),
+		            prior=sum(pvec,na.rm=TRUE),
+		            dt=dt,bt=bt,sbt=sbt,ft=ft)
 		return(out)
 	})
 }

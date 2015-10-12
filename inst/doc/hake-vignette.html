@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
-<meta name="author" content="Steven Martell" />
+<meta name="author" content="Steve Martell" />
 
-<meta name="date" content="2015-09-09" />
+<meta name="date" content="2015-10-11" />
 
 <title>Example: Namibian Hake</title>
 
@@ -71,8 +71,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <div id="header">
 <h1 class="title">Example: Namibian Hake</h1>
-<h4 class="author"><em>Steven Martell</em></h4>
-<h4 class="date"><em>2015-09-09</em></h4>
+<h4 class="author"><em>Steve Martell</em></h4>
+<h4 class="date"><em>2015-10-11</em></h4>
 </div>
 
 
@@ -104,35 +104,191 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="co">#&gt; 6 1970   402  0.90       0.2      NA</span></code></pre></div>
 <p>Given a valid `sID’ object, you can quickly run the age-structured model and preview the results.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">    hake &lt;-<span class="st"> </span><span class="kw">runModel</span>(hake)
-    <span class="kw">print</span>(hake)
-<span class="co">#&gt; sID:</span>
-<span class="co">#&gt; Plus Group Age   : 10 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Assessment Summary</span>
-<span class="co">#&gt; ---------------------------------------</span>
-<span class="co">#&gt;   Unfished Spawning Biomass  : 5138 </span>
-<span class="co">#&gt;   Steepness of S–R model     : 0.99 </span>
-<span class="co">#&gt;   Maximum Sustainable Yield  : 265 </span>
-<span class="co">#&gt;   Optimal Fishing Rate FMSY  : 0.25 </span>
-<span class="co">#&gt;   Natural Mortality Rate     : 0.15 </span>
-<span class="co">#&gt;   Current depletion level    : 0.53 </span>
-<span class="co">#&gt; ---------------------------------------</span>
-<span class="co">#&gt; Time Series:</span>
-<span class="co">#&gt;    Year Catch Biomass Spawn.Biomass Recruitment    F</span>
-<span class="co">#&gt; 1  1965    94    5754          5138         529 0.02</span>
-<span class="co">#&gt; 2  1966   212    5657          5051         529 0.04</span>
-<span class="co">#&gt; 3  1967   195    5442          4858         528 0.04</span>
-<span class="co">#&gt; 4  1968   383    5254          4689         528 0.08</span>
-<span class="co">#&gt; 5  1969   320    4883          4354         528 0.07</span>
-<span class="co">#&gt; 6  1970   402    4597          4094         528 0.10</span>
-<span class="co">#&gt; 7  1971   366    4246          3776         528 0.10</span>
-<span class="co">#&gt; 8  1972   606    3956          3512         528 0.18</span>
-<span class="co">#&gt; 9  1973   378    3439          3045         528 0.13</span>
-<span class="co">#&gt; 10 1974   319    3186          2812         528 0.11</span></code></pre></div>
-<div id="input-data-and-stock-id" class="section level3">
-<h3>Input data and Stock ID</h3>
+    <span class="kw">str</span>(hake)
+<span class="co">#&gt; List of 74</span>
+<span class="co">#&gt;  $ id          : chr &quot;Namibian Hake&quot;</span>
+<span class="co">#&gt;  $ age         : int [1:10] 1 2 3 4 5 6 7 8 9 10</span>
+<span class="co">#&gt;  $ linf        : num 100</span>
+<span class="co">#&gt;  $ winf        : num 5</span>
+<span class="co">#&gt;  $ vbk         : num 0.2</span>
+<span class="co">#&gt;  $ to          : num 0</span>
+<span class="co">#&gt;  $ a           : num 5e-06</span>
+<span class="co">#&gt;  $ b           : num 3</span>
+<span class="co">#&gt;  $ ah          : num 2</span>
+<span class="co">#&gt;  $ gh          : num 3</span>
+<span class="co">#&gt;  $ sel50       : num 2</span>
+<span class="co">#&gt;  $ sel95       : num 5</span>
+<span class="co">#&gt;  $ m           : num 0.15</span>
+<span class="co">#&gt;  $ fmsy        : num 0.25</span>
+<span class="co">#&gt;  $ msy         : num 265</span>
+<span class="co">#&gt;  $ dfPriorInfo :'data.frame':    3 obs. of  6 variables:</span>
+<span class="co">#&gt;   ..$ id             : int [1:3] 1 2 3</span>
+<span class="co">#&gt;   ..$ dist           : Factor w/ 3 levels &quot;lnorm&quot;,&quot;norm&quot;,..: 1 3 2</span>
+<span class="co">#&gt;   ..$ par1           : num [1:3] -1.61 0 265</span>
+<span class="co">#&gt;   ..$ par2           : num [1:3] 0.01 1 53</span>
+<span class="co">#&gt;   ..$ log            : logi [1:3] TRUE TRUE TRUE</span>
+<span class="co">#&gt;   ..$ stringAsFactors: logi [1:3] FALSE FALSE FALSE</span>
+<span class="co">#&gt;  $ mu          : Named num [1:3] 0.15 0.25 265</span>
+<span class="co">#&gt;   ..- attr(*, &quot;names&quot;)= chr [1:3] &quot;m&quot; &quot;fmsy&quot; &quot;msy&quot;</span>
+<span class="co">#&gt;  $ sd          : Named num [1:3] 0.0015 0.025 79.5</span>
+<span class="co">#&gt;   ..- attr(*, &quot;names&quot;)= chr [1:3] &quot;m&quot; &quot;fmsy&quot; &quot;msy&quot;</span>
+<span class="co">#&gt;  $ R           : num [1:3, 1:3] 1 0.5 -0.1 0.5 1 0 -0.1 0 1</span>
+<span class="co">#&gt;  $ V           : num [1:3, 1:3] 2.25e-06 1.88e-05 -1.19e-02 1.88e-05 6.25e-04 ...</span>
+<span class="co">#&gt;   ..- attr(*, &quot;dimnames&quot;)=List of 2</span>
+<span class="co">#&gt;   .. ..$ : chr [1:3] &quot;m&quot; &quot;fmsy&quot; &quot;msy&quot;</span>
+<span class="co">#&gt;   .. ..$ : chr [1:3] &quot;m&quot; &quot;fmsy&quot; &quot;msy&quot;</span>
+<span class="co">#&gt;  $ lb.depletion: num 0.01</span>
+<span class="co">#&gt;  $ ub.depletion: num 0.8</span>
+<span class="co">#&gt;  $ data        :'data.frame':    23 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ year     : int [1:23] 1965 1966 1967 1968 1969 1970 1971 1972 1973 1974 ...</span>
+<span class="co">#&gt;   ..$ catch    : int [1:23] 94 212 195 383 320 402 366 606 378 319 ...</span>
+<span class="co">#&gt;   ..$ index    : num [1:23] 1.78 1.31 0.91 0.96 0.88 0.9 0.87 0.72 0.57 0.45 ...</span>
+<span class="co">#&gt;   ..$ index.lse: num [1:23] 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 0.2 ...</span>
+<span class="co">#&gt;   ..$ avgsize  : logi [1:23] NA NA NA NA NA NA ...</span>
+<span class="co">#&gt;  $ phie        : num 9.72</span>
+<span class="co">#&gt;  $ lx          : num [1:10] 1 0.861 0.741 0.638 0.549 ...</span>
+<span class="co">#&gt;  $ va          : num [1:10] 0.273 0.5 0.727 0.877 0.95 ...</span>
+<span class="co">#&gt;  $ fa          : num [1:10] 0.0124 0.0896 0.2675 0.5517 0.9233 ...</span>
+<span class="co">#&gt;  $ ma          : num [1:10] 0.417 0.5 0.583 0.661 0.731 ...</span>
+<span class="co">#&gt;  $ wa          : num [1:10] 0.0298 0.1792 0.4592 0.8349 1.2629 ...</span>
+<span class="co">#&gt;  $ la          : num [1:10] 18.1 33 45.1 55.1 63.2 ...</span>
+<span class="co">#&gt;  $ dre.df      : num -19.6</span>
+<span class="co">#&gt;  $ spr         : num 0.211</span>
+<span class="co">#&gt;  $ beta        : num 0.0903</span>
+<span class="co">#&gt;  $ so          : num 47.8</span>
+<span class="co">#&gt;  $ bo          : num 5138</span>
+<span class="co">#&gt;  $ ro          : num 529</span>
+<span class="co">#&gt;  $ re          : num 524</span>
+<span class="co">#&gt;  $ reck        : num 465</span>
+<span class="co">#&gt;  $ phiq        : num 2.02</span>
+<span class="co">#&gt;  $ phif        : num 2.05</span>
+<span class="co">#&gt;  $ i           : int 23</span>
+<span class="co">#&gt;  $ dphiq.df    : num -8.01</span>
+<span class="co">#&gt;  $ dphie.df    : num -7.47</span>
+<span class="co">#&gt;  $ dlz.df      : num -0.713</span>
+<span class="co">#&gt;  $ t3          : num [1:10] -0.0944 -0.1147 -0.1334 -0.1449 -0.1503 ...</span>
+<span class="co">#&gt;  $ t2          : num [1:10] 0.0101 0.1629 0.7322 1.7387 2.9413 ...</span>
+<span class="co">#&gt;  $ qa          : num [1:10] 0.245 0.437 0.619 0.733 0.788 ...</span>
+<span class="co">#&gt;  $ oa          : num [1:10] 0.196 0.24 0.282 0.309 0.321 ...</span>
+<span class="co">#&gt;  $ sa          : num [1:10] 0.804 0.76 0.718 0.691 0.679 ...</span>
+<span class="co">#&gt;  $ za          : num [1:10] 0.218 0.275 0.332 0.369 0.388 ...</span>
+<span class="co">#&gt;  $ lz          : num [1:10] 1 0.804 0.611 0.438 0.303 ...</span>
+<span class="co">#&gt;  $ depletion   : num 0.533</span>
+<span class="co">#&gt;  $ sbt         : num [1:23] 5138 5051 4858 4689 4354 ...</span>
+<span class="co">#&gt;  $ bt          : num [1:23] 5754 5657 5442 5254 4883 ...</span>
+<span class="co">#&gt;  $ ssb         : num 2740</span>
+<span class="co">#&gt;  $ st          : num [1:10] 0.842 0.827 0.812 0.803 0.798 ...</span>
+<span class="co">#&gt;  $ nage        : int 10</span>
+<span class="co">#&gt;  $ amo         : int [1:9] 1 2 3 4 5 6 7 8 9</span>
+<span class="co">#&gt;  $ apo         : int [1:9] 2 3 4 5 6 7 8 9 10</span>
+<span class="co">#&gt;  $ ft          : num [1:23] 0.0177 0.0412 0.0393 0.0816 0.0731 ...</span>
+<span class="co">#&gt;  $ N           : num [1:23, 1:10] 529 529 528 528 528 ...</span>
+<span class="co">#&gt;  $ nyr         : int 23</span>
+<span class="co">#&gt;  $ cpue        : num [1:23] 1.78 1.31 0.91 0.96 0.88 0.9 0.87 0.72 0.57 0.45 ...</span>
+<span class="co">#&gt;  $ chat        : int [1:23] 94 212 195 383 320 402 366 606 378 319 ...</span>
+<span class="co">#&gt;  $ year        : int [1:23] 1965 1966 1967 1968 1969 1970 1971 1972 1973 1974 ...</span>
+<span class="co">#&gt;  $ nll.relIndex: num -7.5</span>
+<span class="co">#&gt;  $ it_hat      : num [1:23] 1.06 1.042 1.003 0.968 0.9 ...</span>
+<span class="co">#&gt;  $ epsilon     : num [1:23] 2.591 1.143 -0.485 -0.0415 -0.1106 ...</span>
+<span class="co">#&gt;  $ pvec        : num [1:3] 408.22 0 4.89</span>
+<span class="co">#&gt;  $ log.wt      : num -409</span>
+<span class="co">#&gt;  $ nll         : num 406</span>
+<span class="co">#&gt;  $ p.theta     : num -3.23</span>
+<span class="co">#&gt;  $ code        : num 0</span>
+<span class="co">#&gt;  $ p.vec       : num -0.236</span>
+<span class="co">#&gt;  - attr(*, &quot;class&quot;)= chr [1:2] &quot;list&quot; &quot;sid&quot;</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">year</th>
+<th align="right">catch</th>
+<th align="right">index</th>
+<th align="right">index.lse</th>
+<th align="left">avgSize</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1965</td>
+<td align="right">94</td>
+<td align="right">1.78</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1966</td>
+<td align="right">212</td>
+<td align="right">1.31</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1967</td>
+<td align="right">195</td>
+<td align="right">0.91</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1968</td>
+<td align="right">383</td>
+<td align="right">0.96</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1969</td>
+<td align="right">320</td>
+<td align="right">0.88</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1970</td>
+<td align="right">402</td>
+<td align="right">0.90</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1971</td>
+<td align="right">366</td>
+<td align="right">0.87</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1972</td>
+<td align="right">606</td>
+<td align="right">0.72</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">1973</td>
+<td align="right">378</td>
+<td align="right">0.57</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1974</td>
+<td align="right">319</td>
+<td align="right">0.45</td>
+<td align="right">0.2</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">### Inp</td>
+<td align="right">ut data</td>
+<td align="right">and Stoc</td>
+<td align="right">k ID</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 <p>The stock ID object for this example is included in the <code>catchMSY</code> package, and the default values for <code>new_sID</code> were used to set up the initial stock ID object. Here is the structure of that object.</p>
-<p>The  package is intended to be used to determine MSY-based reference points.</p>
+<p>The <code>catchMSY</code> package is intended to be used to determine MSY-based reference points.</p>
 <p>The catchMSY package is based on the initial work for Martell and Froese (2012). “A simple method for estimating MSY from catch and resilience”.</p>
 <p>This is a simple example based on the Namibian hake dataset published in the ecoloigical detective (Hilborn and Mangle, 1997).</p>
 <p>Steps:</p>
@@ -140,7 +296,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>assemble a time-series data file for your stock.</li>
 <li>create a stockID object</li>
 </ul>
-</div>
 </div>
 <div id="stockid-object-sid" class="section level2">
 <h2>stockID object (sID)</h2>

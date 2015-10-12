@@ -1,15 +1,15 @@
 Package: catchMSY
 Type: Package
 Title: Catch-MSY method for estimating MSY-based reference points.
-Version: 0.1
-Date: 2015-09-05
+Version: 0.1.1
+Date: 2015-10-11
 Authors@R: person("Steven", "Martell", email = "martell.steve@gmail.com",role = c("aut", "cre"))
 Maintainer: Steven Martell <martell.steve@gmail.com>
 Description: This package contains several scripts and routines for conducting 
              fisheris stock assessment based on the simple Catch-MSY method 
              developed by  Martell and Froese (2012).
 License: GPL (>= 2)
-Imports: tidyr, ggplot2, mvtnorm, foreach
+Imports: tidyr, ggplot2, mvtnorm, foreach, GGally
 LinkingTo: Rcpp
 Suggests: 
 	knitr,

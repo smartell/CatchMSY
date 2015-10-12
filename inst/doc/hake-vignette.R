@@ -9,7 +9,12 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 ## ------------------------------------------------------------------------
 	hake <- runModel(hake)
-	print(hake)
+	str(hake)
+
+## ---- echo=FALSE, results='asis'-----------------------------------------
+library(catchMSY)
+data(NamibianHake)
+knitr::kable(head(hake$data, 10))
 
 ## ------------------------------------------------------------------------
 library(catchMSY)
