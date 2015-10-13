@@ -1,64 +1,90 @@
-#hake.R
+# Demo using the Nambibian hake data.
 # load the catchMSY library
 library(catchMSY)
-library(tidyr)
-library(ggplot2)
-library(GGally)
-library(mvtnorm)
-library(foreach)
-
-.THEME <- theme_bw(20)
 
 
+# Test that the model runs.
+catchMSYModel(hake)
 
-# 
-# TEST CATCH ONLY METHOD USING hake0
-# 
-load("Hake_0.rda")
 
 # Change to uniform prior for msy
-hake0$dfPriorInfo$dist[3]<-'unif'
-hake0$dfPriorInfo$par1[3]<-100
-hake0$dfPriorInfo$par2[3]<-400
+hake$dfPriorInfo$dist[3]<-'unif'
+hake$dfPriorInfo$par1[3]<-100
+hake$dfPriorInfo$par2[3]<-400
 
 
-hake0 <- sample.sid(hake0,500)
-hake0 <- sir.sid(hake0,1)
+# Change selectivity
+hake$sel50 <- 4.0
+hake$sel95 <- 5.0
 
-with(hake0,{
-	matplot(t(ps.dt[code==0,]),type="l",ylim=c(0,1))
-	matplot(t(ps.bt[code==0,]),type="l")
-	matplot(t(ps.ft[code==0,]),type="l",col="red",lty=1)
-})
+# Generate ransome samples from dfPriorInfo
+hake <- sample.sid(hake,500)
+pairs(hake$S,gap=0)
 
-iclr <- c("steelblue","lightgrey")
-clr  <- iclr[unlist(sign(hake0$code)+1)]
-jpd  <- data.frame(Bo=hake0$bo,Steepness=hake0$h)
-colnames(jpd) <- c("Unfished biomass (Bo)","Steepness (h)")
-pairs(hake0$S,pch=20,gap=0)
-pairs(hake0$S,pch=20,gap=0,col=clr)
-pairs(jpd,gap=0,pch=20)
-pairs(jpd,gap=0,pch=20,col=clr)
+# Now run sir routine
+hake <- sir.sid(hake,1)
+
+# Add Bo and h to samples
+ps <- cbind(hake$S,hake$bo,hake$h)
+colnames(ps) <- c("M","Fmsy","MSY","Bo","Steepness")
+pairs(ps,gap=0,col=unlist(hake$code+1),pch=20)
 
 
+# # library(tidyr)
+# # library(ggplot2)
+# # library(GGally)
+# # library(mvtnorm)
+# # library(foreach)
 
-df2 <- with(hake0,{
-	df  <- ps.dt[code==0,]
-	colnames(df) = data$year
-	df <- cbind(id=1:dim(df)[1],df)
-	return(gather(df,key,dt,-id))
-})
-
+# .THEME <- theme_bw(20)
 
 
 
-p <- ggplot(df2,aes(x=as.double(key),y=dt)) 
-p <- p + stat_summary(geom="ribbon",fun.ymin="min",fun.ymax="max",alpha=0.1)
-p <- p + stat_summary(geom="ribbon", fun.data="median_hilow",alpha=0.2,fill="blue")
-p <- p + stat_summary(geom="ribbon", fun.data="mean_cl_boot",alpha=0.2,fill="red")
-p <- p + geom_line(aes(group=id),size=0.1,alpha=0.1)
-p <- p + labs(x="Year",y="Depletion") + ylim(0,1)
-print(p + .THEME)
+# # 
+# # TEST CATCH ONLY METHOD USING hake0
+# # 
+# load("Hake_0.rda")
+
+
+
+
+# hake0 <- sample.sid(hake0,500)
+# hake0 <- sir.sid(hake0,1)
+
+# with(hake0,{
+# 	matplot(t(ps.dt[code==0,]),type="l",ylim=c(0,1))
+# 	matplot(t(ps.bt[code==0,]),type="l")
+# 	matplot(t(ps.ft[code==0,]),type="l",col="red",lty=1)
+# })
+
+# iclr <- c("steelblue","lightgrey")
+# clr  <- iclr[unlist(sign(hake0$code)+1)]
+# jpd  <- data.frame(Bo=hake0$bo,Steepness=hake0$h)
+# colnames(jpd) <- c("Unfished biomass (Bo)","Steepness (h)")
+# pairs(hake0$S,pch=20,gap=0)
+# pairs(hake0$S,pch=20,gap=0,col=clr)
+# pairs(jpd,gap=0,pch=20)
+# pairs(jpd,gap=0,pch=20,col=clr)
+
+
+
+# df2 <- with(hake0,{
+# 	df  <- ps.dt[code==0,]
+# 	colnames(df) = data$year
+# 	df <- cbind(id=1:dim(df)[1],df)
+# 	return(gather(df,key,dt,-id))
+# })
+
+
+
+
+# p <- ggplot(df2,aes(x=as.double(key),y=dt)) 
+# p <- p + stat_summary(geom="ribbon",fun.ymin="min",fun.ymax="max",alpha=0.1)
+# p <- p + stat_summary(geom="ribbon", fun.data="median_hilow",alpha=0.2,fill="blue")
+# p <- p + stat_summary(geom="ribbon", fun.data="mean_cl_boot",alpha=0.2,fill="red")
+# p <- p + geom_line(aes(group=id),size=0.1,alpha=0.1)
+# p <- p + labs(x="Year",y="Depletion") + ylim(0,1)
+# print(p + .THEME)
 
 # posts.df <- posts.df %>% gather(key,ssb,-id,-wts)
 

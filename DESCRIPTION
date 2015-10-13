@@ -9,7 +9,8 @@ Description: This package contains several scripts and routines for conducting
              fisheris stock assessment based on the simple Catch-MSY method 
              developed by  Martell and Froese (2012).
 License: GPL (>= 2)
-Imports: tidyr, ggplot2, mvtnorm, foreach, GGally
+Imports: tidyr, ggplot2, mvtnorm, foreach, GGally, doMC
+Depends: tidyr, ggplot2, mvtnorm, foreach, GGally, doMC
 LinkingTo: Rcpp
 Suggests: 
 	knitr,

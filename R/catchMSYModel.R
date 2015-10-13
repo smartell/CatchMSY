@@ -1,4 +1,7 @@
 #' Age-structured Catch-MSY model
+#' @description An age-structured assessment model paramterized using MSY and FMSY  
+#' as the leading parameters, and the instantaneous natural mortality  rate. This function generates biomass estimates, estimates of fishing mortality rates, and stock depletion.  It also returns statistical criterion depending on the available data, and non-statistical criterion based on satisfying user specified constraints.
+#' 
 #' @param sID Stock ID object
 #' @param nlSearch Boolean flag to turn off non-statistical criterion for 
 #' non-linear search. Set to TRUE when using non-linear search routines.

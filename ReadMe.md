@@ -58,6 +58,7 @@ Using the devtools package for building the catchMSY package.
 - [ ] Add nll for average weight.
 - [ ] add nll for change in mean length.
 - [ ] add the importance function for statistical SIR
+- [ ] life-hisotry: specifically sequential hermaphrodites (protogynous Scarids–Parrot fish)
 
 ----
 
