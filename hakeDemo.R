@@ -22,8 +22,8 @@ hake0$dfPriorInfo$par1[3]<-100
 hake0$dfPriorInfo$par2[3]<-400
 
 
-hake0 <- sample.sid(hake0,5000)
-hake0 <- sir.sid(hake0,4)
+hake0 <- sample.sid(hake0,500)
+hake0 <- sir.sid(hake0,1)
 
 with(hake0,{
 	matplot(t(ps.dt[code==0,]),type="l",ylim=c(0,1))
@@ -62,22 +62,22 @@ print(p + .THEME)
 
 # posts.df <- posts.df %>% gather(key,ssb,-id,-wts)
 
-df<- with(hake0,{
-	df <- data.frame(S,code=code,clr='black')
-	pdf <- subset(df,code==0)
-	ndf <- subset(df,code!=0)
-	ndf$clr <- 'red'
-	return(rbind(pdf,ndf))
-})
+# df<- with(hake0,{
+# 	df <- data.frame(S,code=code,clr='black')
+# 	pdf <- subset(df,code==0)
+# 	ndf <- subset(df,code!=0)
+# 	ndf$clr <- 'red'
+# 	return(rbind(pdf,ndf))
+# })
 
-# ggpairs(df,1:3,color='clr')
-# p <- ggpairs(df,1:3,color='clr',upper = list(continuous = "density", combo = "box"))
-p <- ggpairs(df,1:3,color='clr',upper = "blank",alpha=0.2)
-print(p + .THEME)
+# # ggpairs(df,1:3,color='clr')
+# # p <- ggpairs(df,1:3,color='clr',upper = list(continuous = "density", combo = "box"))
+# p <- ggpairs(df,1:3,color='clr',upper = "blank",alpha=0.2)
+# print(p + .THEME)
 
 
 # Distribution for MSY
-msy1 <- hake0$S[hake0$code==0,3]
+# msy1 <- hake0$S[hake0$code==0,3]
 
 
 # df<-with(hake0,{

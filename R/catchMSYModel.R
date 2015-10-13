@@ -1,7 +1,9 @@
 #' Age-structured Catch-MSY model
 #' @param sID Stock ID object
+#' @param nlSearch Boolean flag to turn off non-statistical criterion for 
+#' non-linear search. Set to TRUE when using non-linear search routines.
 #' @export
-catchMSYModel <- function(sID,search=FALSE)
+catchMSYModel <- function(sID,nlSearch=FALSE)
 {
 	with(sID,{
 
@@ -92,7 +94,7 @@ catchMSYModel <- function(sID,search=FALSE)
 		# NON-STATISTICAL CRITERION                    #
 		#----------------------------------------------#
 		code <- 0
-		if(!search){
+		if(!nlSearch){
 			# check for extinction
 			if( any(is.na(sbt)) ) { code <- 1 }
 
@@ -165,7 +167,7 @@ catchMSYModel <- function(sID,search=FALSE)
 			pvec[.i] <- -1.0*do.call(.fn,list(.x[.i],.p1,.p2,.p3))
 		}
 		
-		cat(m,"\t",fmsy,"\t",msy,"\t",sum(nll)+sum(pvec),"\n")
+		# cat(m,"\t",fmsy,"\t",msy,"\t",sum(nll)+sum(pvec),"\n")
 
 		out <- list(code=code,
 		            bo = bo, h=steep,

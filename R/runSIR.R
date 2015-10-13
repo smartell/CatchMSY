@@ -82,7 +82,7 @@ sir.sid <- function(sID,nc=1)
 			sID$m    <- S[i,1]
 			sID$fmsy <- S[i,2]
 			sID$msy  <- S[i,3]
-			return(catchMSYModel(sID))
+			return(catchMSYModel(sir.sid))
 		}
 		cmsy  <- .results
 

@@ -33,42 +33,42 @@ For this example, the Namimbian Hake data set will be used.
 The relative abundance index will be ignored for this example.  For a given sID object, the first step is to draw random samples for M, FMSY and MSY based on the prior info specified in the sID object.  This is accomplished with the `sample.sid` function where the second argument specifies the number of samples.  Next, use the `sir.sid` function to generate `code`s for each of the parameter samples.
 
 ```{r}
-  hake$dfPriorInfo
-	hake <- sample.sid(hake,500)
-	hake <- sir.sid(hake)
-	head(cbind(hake$S,hake$code))
+ #  hake$dfPriorInfo
+	# hake <- sample.sid(hake,500)
+	# hake <- sir.sid(hake)
+	# head(cbind(hake$S,hake$code))
 ```
 
 Once these codes have been generated, its now possible to plot the corresponding distributions based on the Monte Carlo sample.
 
 ```{r,fig.show='hold'}
-  .THEME <- theme_bw()
-df2 <- with(hake,{
-  df  <- ps.dt[code==0,]
-	colnames(df) = data$year
-	df <- cbind(id=1:dim(df)[1],df)
-	return(gather(df,key,dt,-id))
-})
+#   .THEME <- theme_bw()
+# df2 <- with(hake,{
+#   df  <- ps.dt[code==0,]
+# 	colnames(df) = data$year
+# 	df <- cbind(id=1:dim(df)[1],df)
+# 	return(gather(df,key,dt,-id))
+# })
 
-p <- ggplot(df2,aes(x=as.double(key),y=dt)) 
-p <- p + stat_summary(geom="ribbon",fun.ymin="min",fun.ymax="max",alpha=0.1)
-p <- p + stat_summary(geom="ribbon", fun.data="median_hilow",alpha=0.2,fill="blue")
-p <- p + stat_summary(geom="ribbon", fun.data="mean_cl_boot",alpha=0.2,fill="red")
-p <- p + geom_line(aes(group=id),size=0.1,alpha=0.1)
-p <- p + labs(x="Year",y="Depletion")
-print(p + .THEME)
+# p <- ggplot(df2,aes(x=as.double(key),y=dt)) 
+# p <- p + stat_summary(geom="ribbon",fun.ymin="min",fun.ymax="max",alpha=0.1)
+# p <- p + stat_summary(geom="ribbon", fun.data="median_hilow",alpha=0.2,fill="blue")
+# p <- p + stat_summary(geom="ribbon", fun.data="mean_cl_boot",alpha=0.2,fill="red")
+# p <- p + geom_line(aes(group=id),size=0.1,alpha=0.1)
+# p <- p + labs(x="Year",y="Depletion")
+# print(p + .THEME)
 
-df<- with(hake,{
-  df <- data.frame(S,code=code,clr='black')
-	pdf <- subset(df,code==0)
-	ndf <- subset(df,code!=0)
-	ndf$clr <- 'red'
-	return(rbind(pdf,ndf))
-})
+# df<- with(hake,{
+#   df <- data.frame(S,code=code,clr='black')
+# 	pdf <- subset(df,code==0)
+# 	ndf <- subset(df,code!=0)
+# 	ndf$clr <- 'red'
+# 	return(rbind(pdf,ndf))
+# })
 
-# ggpairs(df,1:3,color='clr')
-p <- ggpairs(df,1:3,color='clr',upper = list(continuous = "density", combo = "box"))
-print(p + .THEME)
+# # ggpairs(df,1:3,color='clr')
+# p <- ggpairs(df,1:3,color='clr',upper = list(continuous = "density", combo = "box"))
+# print(p + .THEME)
 
 
 

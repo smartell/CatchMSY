@@ -24,7 +24,7 @@ solver <- function(sID)
 		sID$fmsy <- exp(theta[2])
 		sID$msy  <- exp(theta[3])
 		# nll      <- runModel(sID)$nll	
-		rm      <- catchMSYModel(sID,search=TRUE)	
+		rm      <- catchMSYModel(sID,nlSearch=TRUE)	
 		# print(rm$nll)
 		return(rm$nll+rm$prior)
 	}
