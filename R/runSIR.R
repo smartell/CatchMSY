@@ -95,6 +95,8 @@ sir.sid <- function(sID,nc=1)
 		# cmsy  <- apply(S,1,fn)
 
 		sID$code   <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
+		sID$bo     <- plyr::ldply(cmsy,function(x){c("bo"=x[['bo']])})
+		sID$h      <- plyr::ldply(cmsy,function(x){c("h"=x[['h']])})
 		sID$nll    <- plyr::ldply(cmsy,function(x){c("nll"=x[['nll']])})
 		sID$prior  <- plyr::ldply(cmsy,function(x){c("prior"=x[['prior']])})
 		sID$ps.bt  <- plyr::ldply(cmsy,function(x){c("bt"=x[['bt']])})

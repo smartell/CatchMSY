@@ -17,7 +17,7 @@ __Window:__
     # Remove the package after installation
     unlink("devtools.zip")
     
-One devtools is installed you can install the catchMSY package directly from github:
+Once devtools is installed you can install the catchMSY package directly from github:
 
     devtools::install_github("smartell/catchMSY",build_vignettes=TRUE)
 
@@ -48,6 +48,13 @@ Using the devtools package for building the catchMSY package.
 ### To do
 - [ ] fix non-linear search routine
 - [ ] Create S3 ploting routines for sID class
+    - [ ] biomass plot
+    - [ ] fishing mortality rate plot
+    - [ ] depletion
+    - [ ] pairs plot for posterior samples
+- [ ] Summary function for sid class.
+    - [ ] non-linear search summary.
+    - [ ] importance sample summary.
 - [ ] Add nll for average weight.
 - [ ] add nll for change in mean length.
 - [ ] add the importance function for statistical SIR

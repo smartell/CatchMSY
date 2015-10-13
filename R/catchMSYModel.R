@@ -1,7 +1,7 @@
 #' Age-structured Catch-MSY model
 #' @param sID Stock ID object
 #' @export
-catchMSYModel <- function(sID)
+catchMSYModel <- function(sID,search=FALSE)
 {
 	with(sID,{
 
@@ -45,6 +45,7 @@ catchMSYModel <- function(sID)
 		phif  <- sum(lz*fa)
 		phiq  <- sum(lz*qa*wa)
 		reck  <- phie/phif - (fmsy*phiq*phie/phif^2*dphie.df) / (phiq+fmsy*dphiq.df)
+		steep <- reck/(4+reck)
 
 		re 	   <- msy / (fmsy*phiq)
 		ro     <- re*(reck-1.0)/(reck-phie/phif)
@@ -91,29 +92,32 @@ catchMSYModel <- function(sID)
 		# NON-STATISTICAL CRITERION                    #
 		#----------------------------------------------#
 		code <- 0
+		if(!search){
+			# check for extinction
+			if( any(is.na(sbt)) ) { code <- 1 }
 
-		# check for extinction
-		if( any(is.na(sbt)) ) { code <- 1 }
+			# check for infinite biomass
+			if( any(is.infinite(sbt)) )	  { code <- 2 }
+			
+			# check for lower bound tolerance
+			if(!is.na(depletion) && depletion <= lb.depletion) { code <- 3 }
 
-		# check for infinite biomass
-		if( any(is.infinite(sbt)) )	  { code <- 2 }
-		
-		# check for lower bound tolerance
-		if(!is.na(depletion) && depletion <= lb.depletion) { code <- 3 }
+			# check for upper bound depletion tolerance
+			if(!is.na(depletion) && depletion >= ub.depletion) { code <- 4 }
 
-		# check for upper bound depletion tolerance
-		if(!is.na(depletion) && depletion >= ub.depletion) { code <- 4 }
+			# check bounds for ft.
+			if( max(ft,na.rm=TRUE) > 5.0 
+			   || any(is.infinite(ft)) 
+			   || min(ft,na.rm=TRUE) < 0 ) { code <- 5}
 
-		# check bounds for ft.
-		if( max(ft,na.rm=TRUE) > 5.0 
-		   || any(is.infinite(ft)) 
-		   || min(ft,na.rm=TRUE) < 0 ) { code <- 5}
-
+			# check estimates of steepness
+			if( reck <= 1.0 ) { code <- 6 }	
+		}
 
 		#----------------------------------------------#
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
-		nll <- rep(NA,length=2)
+		nll <- rep(0,length=2)
 
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
@@ -144,7 +148,7 @@ catchMSYModel <- function(sID)
 				}
 			}
 		}
-		
+
 		# -------------------------------------------- #
 		# PRIORS                                       #
 		# -------------------------------------------- #
@@ -161,7 +165,11 @@ catchMSYModel <- function(sID)
 			pvec[.i] <- -1.0*do.call(.fn,list(.x[.i],.p1,.p2,.p3))
 		}
 		
+		cat(m,"\t",fmsy,"\t",msy,"\t",sum(nll)+sum(pvec),"\n")
+
 		out <- list(code=code,
+		            bo = bo, h=steep,
+		            reck = reck,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft)
