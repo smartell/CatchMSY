@@ -17,7 +17,7 @@ new_sID(id = "Stock Label", age = 1:10, linf = 100, winf = 5,
 A template for a stock class object.
 }
 \description{
-Generate a new stock ID object
+Generates a template sID object for new assessments.
 }
 \details{
 This function returns a list object containing all the necessary
