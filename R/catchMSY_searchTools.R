@@ -38,7 +38,8 @@ sir.sid <- function(sID,nc=1)
 		# 	cmsy <- c(cmsy,catchMSYModel(sID))
 		# }
 		#shared memory parallelism
-		doMC::registerDoMC(nc)
+		# doMC::registerDoMC(nc)
+		registerDoParallel(cores=nc)
 
 		.results <- foreach(i = 1:n) %dopar% {
 			sID$m    <- S[i,1]
