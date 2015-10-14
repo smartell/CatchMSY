@@ -1,5 +1,5 @@
 #' Generate a new stock ID object
-#' 
+#' @description Generates a template sID object for new assessments.
 #' @param id Name of Stock
 #' @param dfile Name of file containing time series data
 #' @return A template for a stock class object.
