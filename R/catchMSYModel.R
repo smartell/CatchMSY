@@ -2,6 +2,13 @@
 #' @description An age-structured assessment model paramterized using MSY and FMSY  
 #' as the leading parameters, and the instantaneous natural mortality  rate. This function generates biomass estimates, estimates of fishing mortality rates, and stock depletion.  It also returns statistical criterion depending on the available data, and non-statistical criterion based on satisfying user specified constraints.
 #' 
+#' @details
+#' The age-structured model is conditioned on the historical catch data 
+#' (in weight).  The catch equation assumes that both
+#' fishing mortality and natural mortality are occuring simultaneously, and the
+#' instantaneous fishing mortality rate is found by solving the Baranov catch 
+#' equation \eqn{C =  F/Z*(1-exp(-Z))*B}, for \code{F}. 
+#'
 #' @param sID Stock ID object
 #' @param nlSearch Boolean flag to turn off non-statistical criterion for 
 #' non-linear search. Set to TRUE when using non-linear search routines.
