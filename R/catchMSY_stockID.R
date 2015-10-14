@@ -1,6 +1,15 @@
 #' Generate a new stock ID object
 #' @description Generates a template sID object for new assessments.
 #' @param id Name of Stock
+#' @param age A vector of integer ages where the terminal age is a plus group.
+#' @param linf Asymptotic length for von Bertalanffy growth
+#' @param winf Asymptotic weight.
+#' @param vbk  von Bertalanffy growth coefficient.
+#' @param to   theoretical age at 0 length (years).
+#' @param a    allometric scaler in length-weight relationship \eqn{w = a L ^b}
+#' @param b    allometric power parameter in length-weight relationship
+#' @param ah age at 50\% maturity
+#' @param gh standard deviation in age at 50\% maturity
 #' @param dfile Name of file containing time series data
 #' @return A template for a stock class object.
 #' @details This function returns a list object containing all the necessary
@@ -18,8 +27,8 @@ new_sID <- function(id  = "Stock Label",
 					to   = 0.0,
 					a    = 5e-6,
 					b    = 3.0,
-					mat_age_50  = 2.0,
-					mat_age_95  = 3.0,
+					ah  = 2.0,
+					gh  = 0.2,
 					m    = 0.2,
 					fmsy = 0.15,
 					msy  = 1.0,
@@ -38,8 +47,8 @@ new_sID <- function(id  = "Stock Label",
 	S$b    <- b
 
 	# maturity parameters
-	S$ah   <- mat_age_50
-	S$gh   <- mat_age_95
+	S$ah   <- ah
+	S$gh   <- gh
 
 	# selectivity parameters
 	S$sel50 <- 2.0
@@ -88,6 +97,6 @@ new_sID <- function(id  = "Stock Label",
 		S$data <- df
 	}
 
-
+	class(S) <- c("stockID",class(S))
 	return(S)
 }
