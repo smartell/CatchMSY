@@ -2,7 +2,7 @@
 #' @param sID is the stock object
 #' @param n number of samples
 #' @param nc number of cores
-#' @export
+#'
 #'
 runSIR <- function(sID,n=100,nc=1)
 {	
@@ -111,7 +111,7 @@ sir.sid <- function(sID,nc=1)
 
 #' Interval Sample
 #' Draw from the dfPriorInfo
-#' @export
+#' 
 IS <- function(sID,n=100,nc=1)
 {
 
