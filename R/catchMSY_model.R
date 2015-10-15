@@ -84,6 +84,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		N    <- matrix(nrow=length(year),ncol=length(age))
 		N[1,]<- ro*lx
 		ft   <- vector("numeric",length=length(year))
+		bt   <- vector("numeric",length=length(year))
 		apo  <- age[-min(age)]
 		amo  <- age[-max(age)]
 		nage <- max(age)
@@ -92,6 +93,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			ft[i]	   <- getFt(chat[i],m,va,wa,N[i,])
 			st         <- exp(-m-ft[i]*va)
 			ssb        <- sum(N[i,]*fa)
+			bt[i]      <- sum(N[i,]*wa*va)
 			if(i < nyr)
 			{
 				N[i+1,1]   <- so*ssb/(1+beta*ssb)
@@ -100,7 +102,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 		}
 		
-		bt  <- as.vector(N %*% (va*wa))
+		# bt  <- as.vector(N %*% (va*wa))
 		sbt <- as.vector(N %*% fa)
 		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
