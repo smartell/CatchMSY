@@ -66,11 +66,15 @@ sir.sid <- function(sID,ncores=1)
 		sID$ps.dt  <- plyr::ldply(cmsy,function(x){c("dt"=x[['dt']])})
 		sID$ps.sbt <- plyr::ldply(cmsy,function(x){c("sbt"=x[['sbt']])})
 		sID$ps.ft  <- plyr::ldply(cmsy,function(x){c("ft"=x[['ft']])})
-		sID$wts   <- exp(-sum(sID$nll + sID$prior,na.rm=TRUE))
+		sID$wts    <- exp(-(sID$nll + sID$prior))
 
+		sID$idx    <- which(sID$code==0)
 		# sample index where code==0
-		ic <- which(sID$code==0)
-		ii <- sample(ic,length(ic),replace=TRUE,prob=sID$wts[ic])
+		ic <- which(sID$nll!=0)
+		if( length(ic) > 0 ){
+			prb <- unlist(sID$wts)[ic]
+			sID$idx  <- sample(ic,length(ic),replace=TRUE,prob=prb)
+		}
 		return(sID)
 	})
 }

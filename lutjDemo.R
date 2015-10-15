@@ -53,6 +53,7 @@ M0      <- sample.sid(M0,.NSAMP)
 # run model with each sample
 M0      <- sir.sid(M0,ncores=.NCORE)
 
+
 # Get MSY statistics
 M0$msy.stats <- summary(M0$S[M0$code==0,3])
 
@@ -70,6 +71,24 @@ M1      <- sir.sid(M1,ncores=.NCORE)
 
 # Get MSY statistics
 M1$msy.stats <- summary(M1$S[M0$code==0,3])
+
+
+#|---------------------------------------------------------------------------|#
+#|	GRAPHICS ANS SUMMARY STATISTICS                                          |#
+#|---------------------------------------------------------------------------|#
+
+plot.stockID <- function(sID)
+{
+	with(sID,{
+		if(exists("idx")){
+			matplot(data$year,t(ps.bt[idx,]),type="l",col="black",lty=1)	
+		}
+
+	})
+	
+}
+
+plot(M0)
 
 Q <- catchMSYModel(M1)$Q
 matplot(Q,type="l")
