@@ -21,8 +21,9 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		la <- linf*(1.0-exp(-vbk*(age-to)))
 		wa <- a*la^b
 		ma <- plogis(age,ah,gh)
-		fa <- wa*ma
+		fa <- wa*ma #fecundity is assumed to be proportional to mature body weight.
 		va <- 1.0/(1.0+(exp(-log(19)*((age-sel50)/(sel95-sel50)))));
+		#todo  add option for survey selectivy (CIE review request.)
 		lx <- exp(-m*(age-min(age)))
 		lx[max(age)] <- lx[max(age)]/(1.0-exp(-m))
 		phie <- sum(lx*fa)
@@ -150,7 +151,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 
 			# Absolute biomass index.
-			if(with(hake$data,exists("biomass"))){
+			if(with(sID$data,exists("biomass"))){
 				if( any(!is.na(data$biomass)) ) {
 					ii     <- which(!is.na(data$biomass))
 					.it    <- log(data$biomass[ii])
@@ -159,6 +160,12 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 					nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
 				}
 			}
+
+			# Add mean-size likelihood here
+
+			# Add mean weight-composition likelihood here.
+
+
 		}
 
 		# -------------------------------------------- #
@@ -181,7 +188,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 
 		out <- list(code=code,
 		            bo = bo, h=steep,
-		            reck = reck,
+		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft)

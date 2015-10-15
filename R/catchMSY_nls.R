@@ -28,7 +28,7 @@ solver <- function(sID)
 		m      <- mu[1]
 		fmsy   <- mu[2]
 		msy    <- mu[3]
-		sID    <- runModel(sID)
+		sID    <- catchMSYModel(sID)
 		return(sID)
 	})
 }

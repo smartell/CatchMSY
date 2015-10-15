@@ -13,6 +13,8 @@ getFt <- function(ct,m,va,wa,na)
 		c2	<- sum(va*T1*T3/T4 - ft*va^2*T1*T3/T4^2 + ft*va^2*T1*T2/T4)
 		ft	<- ft - (c1-ct)/c2	#newton step.
 	}
+	TOL = 1.e-5
+	if(c1-c2 > TOL) cat("Newton Raphson method failed to converge")
 	# cat("ft = ",ft,"\n")
 	return (ft)
 }
