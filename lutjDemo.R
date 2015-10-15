@@ -75,6 +75,12 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	# Get MSY statistics
 	M1$msy.stats <- summary(M1$S[M0$code==0,3])
 
+#|---------------------------------------------------------------------------|#
+#|	CATCH WITH BIOMASS                                                       |#
+#|---------------------------------------------------------------------------|#
+
+
+
 
 #|---------------------------------------------------------------------------|#
 #|	GRAPHICS AND SUMMARY STATISTICS                                          |#
