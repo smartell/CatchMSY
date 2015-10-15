@@ -19,6 +19,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 
 		# calcAgeSchedules
 		la <- linf*(1.0-exp(-vbk*(age-to)))
+		la.sd <- 0.07*la
 		wa <- a*la^b
 		ma <- plogis(age,ah,gh)
 		fa <- wa*ma #fecundity is assumed to be proportional to mature body weight.
@@ -136,17 +137,19 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		if( code == 0 ){
 			# Relative abundance (trend info)
 			# If code==0, and abundance data exists, compute nll
-			if( any(!is.na(data$index)) ) {
-				 ii <- which(!is.na(data$index))
-				.it <- data$index[ii]
-				.se <- data$index.lse[ii]
-				if(length(.it)>1){
-					.zt    <- log(.it) - log(bt[ii])
-					.zbar  <- mean(.zt)
-					nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
-				}
-				else{
-					cat("There is insufficient data to fit to trends.")
+			if(with(sID$data,exists("index"))){
+				if( any(!is.na(data$index)) ) {
+					 ii <- which(!is.na(data$index))
+					.it <- data$index[ii]
+					.se <- data$index.lse[ii]
+					if(length(.it)>1){
+						.zt    <- log(.it) - log(bt[ii])
+						.zbar  <- mean(.zt)
+						nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
+					}
+					else{
+						cat("There is insufficient data to fit to trends.")
+					}
 				}
 			}
 
@@ -161,8 +164,25 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				}
 			}
 
+			#
 			# Add mean-size likelihood here
+			bw <- 1.0 #bin width = 1 cm
+			A  <- max(age)
+			l1 <- floor(la[1]-3*la.sd[1])
+			l2 <- ceiling(la[A]+3*la.sd[A])
+			x  <- seq(l1,l2+bw,by=bw)
+			bw <- diff(x[1:2])
+			ALK<- sapply(x+0.5*bw,pnorm,mean=la,sd=la.sd)-sapply(x-0.5*bw,pnorm,mean=la,sd=la.sd)
+			
+			falk <- function(ii)
+			{
+				iiQ  <- (N[ii,]*va) %*% ALK	
+				return(iiQ)	
+			}
+			ii <- which(!is.na(data$catch))
+			Q  <- sapply(ii,falk)
 
+			# matplot((Q),type="l")
 			# Add mean weight-composition likelihood here.
 
 
@@ -188,10 +208,11 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 
 		out <- list(code=code,
 		            bo = bo, h=steep,
+		            wa = wa, 
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q)
 		return(out)
 	})
 }

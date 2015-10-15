@@ -25,7 +25,7 @@ sample.sid <- function(sID,n=100)
 #' @param sID Stock ID object
 #' @param nc  Number of cores for parrallel processing.
 #' @export
-sir.sid <- function(sID,nc=1)
+sir.sid <- function(sID,ncores=1)
 {
 	with(sID,{
 		n    <- dim(S)[1]
@@ -39,7 +39,7 @@ sir.sid <- function(sID,nc=1)
 		# }
 		#shared memory parallelism
 		# doMC::registerDoMC(nc)
-		registerDoParallel(cores=nc)
+		registerDoParallel(cores=ncores)
 
 		.results <- foreach(i = 1:n) %dopar% {
 			sID$m    <- S[i,1]
@@ -66,6 +66,7 @@ sir.sid <- function(sID,nc=1)
 		sID$ps.dt  <- plyr::ldply(cmsy,function(x){c("dt"=x[['dt']])})
 		sID$ps.sbt <- plyr::ldply(cmsy,function(x){c("sbt"=x[['sbt']])})
 		sID$ps.ft  <- plyr::ldply(cmsy,function(x){c("ft"=x[['ft']])})
+		sID$wts   <- exp(-(sID$nll + sID$prior))
 		return(sID)
 	})
 }
