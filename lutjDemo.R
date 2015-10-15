@@ -70,3 +70,6 @@ M1      <- sir.sid(M1,ncores=.NCORE)
 
 # Get MSY statistics
 M1$msy.stats <- summary(M1$S[M0$code==0,3])
+
+Q <- catchMSYModel(M1)$Q
+matplot(Q,type="l")
