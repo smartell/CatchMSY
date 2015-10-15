@@ -19,6 +19,7 @@ lutjanid$linf <- 34.0
 lutjanid$vbk  <- 0.29
 lutjanid$a    <- 2.447128e-05 #units are lbs
 lutjanid$b    <- 3.154
+lutjanid$winf <- lutjanid$a * lutjanid$linf^lutjanid$b
 
 lutjanid$m    <- 1.50 * lutjanid$vbk
 lutjanid$ah   <- 1.65 / lutjanid$m

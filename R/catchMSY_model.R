@@ -29,6 +29,10 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		lx[max(age)] <- lx[max(age)]/(1.0-exp(-m))
 		phie <- sum(lx*fa)
 
+		# Ford-Brody Growth parameter transformation
+		rho   <- exp(-vbk)
+		alpha <- winf*(1-rho)
+
 		# calcBoSteepness
 		lz	<- vector("numeric",length=length(age))
 		za  <- m + fmsy*va
