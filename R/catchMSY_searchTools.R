@@ -37,25 +37,30 @@ sir.sid <- function(sID,ncores=1)
 		# 	sID$msy  <- S[i,3]
 		# 	cmsy <- c(cmsy,catchMSYModel(sID))
 		# }
+
 		#shared memory parallelism
 		# doMC::registerDoMC(nc)
-		registerDoParallel(cores=ncores)
+		if(ncores > 1)
+		{
+			registerDoParallel(cores=ncores)
 
-		.results <- foreach(i = 1:n) %dopar% {
-			sID$m    <- S[i,1]
-			sID$fmsy <- S[i,2]
-			sID$msy  <- S[i,3]
-			return(catchMSYModel(sID))
+			.results <- foreach(i = 1:n) %dopar% {
+				sID$m    <- S[i,1]
+				sID$fmsy <- S[i,2]
+				sID$msy  <- S[i,3]
+				return(catchMSYModel(sID))
+			}
+			cmsy  <- .results			
 		}
-		cmsy  <- .results
-
-		# fn <- function(s){
-		# 	sID$m    <- s[1]
-		# 	sID$fmsy <- s[2]
-		# 	sID$msy  <- s[3]
-		# 	return(catchMSYModel(sID))
-		# }
-		# cmsy  <- apply(S,1,fn)
+		else {
+			fn <- function(s){
+				sID$m    <- s[1]
+				sID$fmsy <- s[2]
+				sID$msy  <- s[3]
+				return(catchMSYModel(sID))
+			}
+			cmsy  <- apply(S,1,fn)			
+		}
 
 		sID$code   <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
 		sID$bo     <- plyr::ldply(cmsy,function(x){c("bo"=x[['bo']])})

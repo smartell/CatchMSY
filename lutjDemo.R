@@ -5,7 +5,7 @@
 library(catchMSY)
 
 .NSAMP <- 5000
-.NCORE <- 8
+.NCORE <- 1
 .THEME <- theme_bw(12)
 
 
