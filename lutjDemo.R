@@ -56,28 +56,37 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	# run model with each sample
 	M0      <- sir.sid(M0,ncores=.NCORE)
 
-
 	# Get MSY statistics
-	M0$msy.stats <- summary(M0$S[M0$code==0,3])
+	M0$msy.stats <- summary(M0$S[M0$idx,3])
 
 
 #|---------------------------------------------------------------------------|#
 #|	CATCH WITH BIOMASS                                                       |#
 #|---------------------------------------------------------------------------|#
 	M1      <- lutjanid
+	M2      <- lutjanid
+	M2$dfPriorInfo$par1[3] = quantile(lutjanid$data$catch,0.05)
+	M2$dfPriorInfo$par2[3] = 1.5*quantile(lutjanid$data$catch,0.95)
 
 	# generate samples from parameter samples
 	M1      <- sample.sid(M1,.NSAMP)
+	M2      <- sample.sid(M2,.NSAMP)
 
 	# run model with each sample
 	M1      <- sir.sid(M1,ncores=.NCORE)
+	M2      <- sir.sid(M2,ncores=.NCORE)
 
 	# Get MSY statistics
-	M1$msy.stats <- summary(M1$S[M0$code==0,3])
+	M1$msy.stats <- summary(M1$S[M1$idx,3])
+	M2$msy.stats <- summary(M2$S[M2$idx,3])
 
 #|---------------------------------------------------------------------------|#
-#|	CATCH WITH BIOMASS                                                       |#
+#|	SIMULATION MODEL                                                         |#
 #|---------------------------------------------------------------------------|#
+	S1      <- lutjanid
+	R1      <- catchMSYModel(S1)
+	ii      <- which(!is.na(S1$data$biomass))
+	S1$data$biomass[ii] <- rlnorm(length(ii),log(R1$bt[ii]),0.2)
 
 
 
@@ -88,5 +97,14 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	plot(M0,.THEME)
 	plot(M1,.THEME)
 
+	quartz()
+	M1$sel50 <- 3
+	M1$sel95 <- 4
+	Q <- catchMSYModel(M1)$Q
+	matplot(Q,type="l")
+
+	quartz()
+	M1$sel50 <- 2
+	M1$sel95 <- 3
 	Q <- catchMSYModel(M1)$Q
 	matplot(Q,type="l")
