@@ -5,7 +5,7 @@
 library(catchMSY)
 
 .NSAMP <- 5000
-.NCORE <- 1
+.NCORE <- 8
 .THEME <- theme_bw(12)
 
 
@@ -32,6 +32,8 @@ lutjanid$fmsy <- 0.6 * lutjanid$m
 # Set age-at-entry to the fishery.
 lutjanid$sel50 <- 3
 lutjanid$sel95 <- 4
+
+# Add option to specify selectivity in terms of length.
 
 # Set parameter sampling frame
 lutjanid$dfPriorInfo$dist[1] = "lnorm"
@@ -87,10 +89,15 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	S1      <- lutjanid
 	R1      <- catchMSYModel(S1)
 	ii      <- which(!is.na(S1$data$biomass))
-	S1$data$biomass[ii] <- rlnorm(length(ii),log(R1$bt[ii]),0.2)
+	# xx      <- R1$bt[ii]*exp(rnorm(length(ii),0,S1$data$biomass.lse[ii]))
+	# S1$data$biomass[ii] <- xx
+	S1$data$biomass[ii] <- rlnorm(length(ii),log(R1$bt[ii]),S1$data$biomass.lse[ii])
 
+	print(S1$msy)
 
-
+	S1 <- sample.sid(S1,.NSAMP)
+	S1 <- sir.sid(S1,ncores=.NCORE)
+	S1$msy.stats <- summary(S1$S[S1$idx,3])
 
 #|---------------------------------------------------------------------------|#
 #|	GRAPHICS AND SUMMARY STATISTICS                                          |#

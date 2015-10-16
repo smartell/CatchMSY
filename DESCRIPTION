@@ -1,7 +1,7 @@
 Package: catchMSY
 Type: Package
 Title: Catch-MSY method for estimating MSY-based reference points
-Version: 0.1.1
+Version: 0.1.2
 Date: 2015-10-11
 Authors@R: person("Steven", "Martell", email = "martell.steve@gmail.com",role = c("aut", "cre"))
 Maintainer: Steven Martell <martell.steve@gmail.com>

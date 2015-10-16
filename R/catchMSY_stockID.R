@@ -14,6 +14,7 @@
 #' @return A template for a stock class object.
 #' @details This function returns a list object containing all the necessary
 #'          information to run the catchMSY routines.  
+#'         Column headings are: year catch biomass biomass.lse index index.lse
 #' @export
 #'
 #' @examples 
