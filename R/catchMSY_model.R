@@ -182,9 +182,9 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			A  <- max(age)
 			l1 <- floor(la[1]-3*la.sd[1])
 			l2 <- ceiling(la[A]+3*la.sd[A])
-			x  <- seq(1,l2+bw,by=bw)
-			bw <- diff(x[1:2])
-			ALK<- sapply(x+0.5*bw,pnorm,mean=la,sd=la.sd)-sapply(x-0.5*bw,pnorm,mean=la,sd=la.sd)
+			bin  <- seq(1,l2+bw,by=bw)
+			bw <- diff(bin[1:2])
+			ALK<- sapply(bin+0.5*bw,pnorm,mean=la,sd=la.sd)-sapply(bin-0.5*bw,pnorm,mean=la,sd=la.sd)
 			
 			falk <- function(ii)
 			{
@@ -193,7 +193,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 			ii <- which(!is.na(data$catch))
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
-
+				rownames(Q) <- paste0("LC.", bin)
 			# matplot((Q),type="l")
 			# Add mean weight-composition likelihood here.
 
