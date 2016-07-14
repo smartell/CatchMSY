@@ -44,7 +44,7 @@ sir.sid <- function(sID,ncores=1)
 		{
 			registerDoParallel(cores=ncores)
 
-			.results <- foreach(i = 1:n) %dopar% {
+			.results <- foreach(i = 1:n, .export="sID") %dopar% {
 				sID$m    <- S[i,1]
 				sID$fmsy <- S[i,2]
 				sID$msy  <- S[i,3]
