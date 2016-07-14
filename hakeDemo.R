@@ -17,6 +17,9 @@ hake$dfPriorInfo$par2[3]<-400
 hake$sel50 <- 4.0
 hake$sel95 <- 5.0
 
+# add length CV
+hake$la.cv <- 0.07
+
 # Generate ransome samples from dfPriorInfo
 hake <- sample.sid(hake,500)
 pairs(hake$S,gap=0)

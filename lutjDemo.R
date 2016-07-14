@@ -1,11 +1,11 @@
 #lutj.R
 #load the library 
 #If you need to obtain the catch MSY package use:
-# devtools::install_github("smartell/catchMSY",build.vignettes=TRUE)
+devtools::install_github("merrillrudd/catchMSY",build.vignettes=TRUE)
 library(catchMSY)
 
 .NSAMP <- 5000
-.NCORE <- 8
+.NCORE <- 3
 .THEME <- theme_bw(12)
 
 
@@ -17,6 +17,7 @@ lutjanid     <- new_sID(id="Lutjanidae",dfile="./inst/extdata/lutj.dat")
 # Reference:(Moralis-Nin & Ralston, 1989)
 lutjanid$linf <- 34.0
 lutjanid$vbk  <- 0.29
+lutjanid$la.cv <- 0.07
 lutjanid$a    <- 2.447128e-05 #units are lbs
 lutjanid$b    <- 3.154
 lutjanid$winf <- lutjanid$a * lutjanid$linf^lutjanid$b
