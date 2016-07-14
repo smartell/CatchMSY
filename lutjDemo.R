@@ -1,7 +1,7 @@
 #lutj.R
 #load the library 
 #If you need to obtain the catch MSY package use:
-devtools::install_github("merrillrudd/catchMSY",build.vignettes=TRUE)
+devtools::install_github("merrillrudd/CatchMSY",build.vignettes=TRUE)
 library(catchMSY)
 
 .NSAMP <- 5000
@@ -99,6 +99,29 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	S1 <- sample.sid(S1,.NSAMP)
 	S1 <- sir.sid(S1,ncores=.NCORE)
 	S1$msy.stats <- summary(S1$S[S1$idx,3])
+
+#|---------------------------------------------------------------------------|#
+#|	CATCH WITH SIZE COMP                                                     |#
+#|---------------------------------------------------------------------------|#
+
+	## simulate length comp data
+	Ssim <- lutjanid
+	Ssim$la.cv <- 0.15 ## adjust length CV to simulate messy data
+	Rsim <- catchMSYModel(Ssim)
+
+	## add generated length comp data to observed catch data
+	M3 <- lutjanid
+	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], round(t(Rsim$Q/12)))
+
+	# generate samples from parameter samples
+	M3      <- sample.sid(M3,.NSAMP)
+
+	# run model with each sample
+	M3      <- sir.sid(M3,ncores=.NCORE)
+
+	# Get MSY statistics
+	M3$msy.stats <- summary(M3$S[M3$idx,3])
+
 
 #|---------------------------------------------------------------------------|#
 #|	GRAPHICS AND SUMMARY STATISTICS                                          |#
