@@ -177,7 +177,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 
 			#
-			# Add mean-size likelihood here
+			# Size comp likelihood here
 			bw <- 1.0 #bin width = 1 cm
 			A  <- max(age)
 			l1 <- floor(la[1]-3*la.sd[1])
@@ -194,8 +194,15 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			ii <- which(!is.na(data$catch))
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
 				rownames(Q) <- paste0("LC.", bin)
+
+			if(any(grepl("LC.", colnames(data)))){
+				.qobs <- data[,grep("LC.", colnames(data))]
+				.qexp <- t(Q)
+				nll[3] <- -1.0*sum(sapply(1:nyr, function(yy) dmultinom(x=.qobs[yy,], prob=.qexp[yy,], log=TRUE)))/nyr
+			}
 			# matplot((Q),type="l")
-			# Add mean weight-composition likelihood here.
+
+			# Mean length likelihood
 
 
 		}
