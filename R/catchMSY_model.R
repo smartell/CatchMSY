@@ -197,9 +197,9 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				rownames(Q) <- rownames(Qp) <- paste0("LC.", bin)
 
 			if(any(grepl("LC.", colnames(data)))){
-				.qobs <- data[,grep("LC.", colnames(data))]
-				.qexp <- t(Q)
-				nll[3] <- -1.0*sum(sapply(1:nyr, function(yy) dmultinom(x=.qobs[yy,], prob=.qexp[yy,], log=TRUE)))/nyr
+				.qobs <- data[,grep("LC.", colnames(data))]*data[,"ESS"]
+				.qexp <- t(Qp)
+				nll[3] <- -1.0*sum(sapply(1:nyr, function(yy) dmultinom(x=.qobs[yy,], prob=.qexp[yy,], log=TRUE)))
 			}
 			# matplot((Q),type="l")
 
