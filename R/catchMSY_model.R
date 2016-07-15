@@ -193,7 +193,8 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 			ii <- which(!is.na(data$catch))
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
-				rownames(Q) <- paste0("LC.", bin)
+			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
+				rownames(Q) <- rownames(Qp) <- paste0("LC.", bin)
 
 			if(any(grepl("LC.", colnames(data)))){
 				.qobs <- data[,grep("LC.", colnames(data))]
@@ -231,7 +232,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp)
 		return(out)
 	})
 }
