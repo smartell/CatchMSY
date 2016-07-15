@@ -202,6 +202,16 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				.qexp <- t(Qp)
 				nll[3] <- -1.0*sum(sapply(1:nyr, function(yy) dmultinom(x=.qobs[yy,], prob=.qexp[yy,], log=TRUE)))
 			}
+
+			if(with(sID$data,exists("meanlength"))){
+				if( any(!is.na(data$meanlength)) ) {
+					ii     <- which(!is.na(data$meanlength))
+					.mlobs    <- log(data$meanlength[ii])
+					.mlexp    <- log(ML[ii])
+					.se    <- 1
+					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
+				}
+			}
 			# matplot((Q),type="l")
 
 			# Mean length likelihood
