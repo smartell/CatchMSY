@@ -102,7 +102,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			# bpls[i]    <- spls*(alpha*N[i,nage]+rho*)
 			if(i < nyr)
 			{
-				N[i+1,1]   <- so*ssb/(1+beta*ssb)
+			N[i+1,1]   <- so*ssb/(1+beta*ssb)
 				N[i+1,apo] <- N[i,amo] * st[amo]
 				N[i+1,nage]<- N[i+1,nage]+N[i,nage] * st[nage]
 			}
@@ -232,7 +232,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q)
 		return(out)
 	})
 }
