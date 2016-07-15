@@ -1,13 +1,12 @@
 #lutj.R
 #load the library 
 #If you need to obtain the catch MSY package use:
-devtools::install_github("merrillrudd/CatchMSY",build.vignettes=TRUE)
+devtools::install_github("smartell/CatchMSY",build.vignettes=TRUE)
 library(catchMSY)
 
 .NSAMP <- 5000
-.NCORE <- 3
+.NCORE <- 8
 .THEME <- theme_bw(12)
-
 
 # Create a new stockID
 lutjanid     <- new_sID(id="Lutjanidae",dfile="./inst/extdata/lutj.dat")
@@ -47,9 +46,9 @@ lutjanid$dfPriorInfo$dist[3] = "unif"
 lutjanid$dfPriorInfo$par1[3] = quantile(lutjanid$data$catch,0.05)
 lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 
-#|---------------------------------------------------------------------------|#
-#|	CATCH ONLY METHOD  M0                                                    |#
-#|---------------------------------------------------------------------------|#
+#|-----------------------------------------------------------------|#
+#|	CATCH ONLY METHOD                                              |#
+#|-----------------------------------------------------------------|#
 	M0      <- lutjanid
 	# remove biomass data for the Catch only Method
 	M0$data <- M0$data[,1:2]
@@ -64,9 +63,9 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	M0$msy.stats <- summary(M0$S[M0$idx,3])
 
 
-#|---------------------------------------------------------------------------|#
-#|	CATCH WITH BIOMASS                                                       |#
-#|---------------------------------------------------------------------------|#
+#|------------------------------------------------------------|#
+#|	CATCH WITH BIOMASS                                        |#
+#|----------------------------------------------------------- |#
 	M1      <- lutjanid
 	M2      <- lutjanid
 	M2$dfPriorInfo$par1[3] = quantile(lutjanid$data$catch,0.05)
@@ -84,9 +83,9 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	M1$msy.stats <- summary(M1$S[M1$idx,3])
 	M2$msy.stats <- summary(M2$S[M2$idx,3])
 
-#|---------------------------------------------------------------------------|#
-#|	SIMULATION MODEL                                                         |#
-#|---------------------------------------------------------------------------|#
+#|----------------------------------------------------------- |#
+#|	SIMULATION MODEL                                          |#
+#|------------------------------------------------------------|#
 	S1      <- lutjanid
 	R1      <- catchMSYModel(S1)
 	ii      <- which(!is.na(S1$data$biomass))
@@ -100,9 +99,9 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	S1 <- sir.sid(S1,ncores=.NCORE)
 	S1$msy.stats <- summary(S1$S[S1$idx,3])
 
-#|---------------------------------------------------------------------------|#
-#|	CATCH WITH SIZE COMP                                                     |#
-#|---------------------------------------------------------------------------|#
+#|-------------------------------------------------------|#
+#|	CATCH WITH SIZE COMP                                 |#
+#|-------------------------------------------------------|#
 
 	## simulate length comp data
 	Ssim <- lutjanid
@@ -111,7 +110,7 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 
 	## add generated length comp data to observed catch data
 	M3 <- lutjanid
-	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], round(t(Rsim$Q/12)))
+	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], t(Rsim$Qp), "ESS"=rep(1,nrow(lutjanid$data)))
 
 	# generate samples from parameter samples
 	M3      <- sample.sid(M3,.NSAMP)
@@ -122,10 +121,32 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	# Get MSY statistics
 	M3$msy.stats <- summary(M3$S[M3$idx,3])
 
+#|-------------------------------------------------------|#
+#|	CATCH WITH MEAN LENGTH                               |#
+#|-------------------------------------------------------|#
 
-#|---------------------------------------------------------------------------|#
-#|	GRAPHICS AND SUMMARY STATISTICS                                          |#
-#|---------------------------------------------------------------------------|#
+	## simulate length comp data
+	Ssim <- lutjanid
+	Ssim$la.cv <- 0.15 ## adjust length CV to simulate messy data
+	Rsim <- catchMSYModel(Ssim)
+
+	## add generated mean length to observed catch data
+	M4 <- lutjanid
+	M4$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], "meanlength"=Rsim$ML)
+
+	# generate samples from parameter samples
+	M4      <- sample.sid(M4,.NSAMP)
+
+	# run model with each sample
+	M4      <- sir.sid(M4,ncores=.NCORE)
+
+	# Get MSY statistics
+	M4$msy.stats <- summary(M4$S[M4$idx,3])
+
+
+#|-------------------------------------------------|#
+#|	GRAPHICS AND SUMMARY STATISTICS                                         |#
+#|-------------------------------------------------|#
 	plot(M0,.THEME)
 	plot(M1,.THEME)
 
