@@ -144,7 +144,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
-		Q   <- 	Qp <- NULL
+		Q   <- 	Qp <- ML <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -193,6 +193,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 			ii <- which(!is.na(data$catch))
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
+			ML <- sapply(ii, function(x) (Q[,x]*bin)/sum(Q[,x]))
 			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
 				rownames(Q) <- rownames(Qp) <- paste0("LC.", bin)
 
@@ -232,7 +233,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML)
 		return(out)
 	})
 }
