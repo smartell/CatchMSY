@@ -144,7 +144,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
-		Q   <- NULL
+		Q   <- 	Qp <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
