@@ -232,7 +232,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp)
 		return(out)
 	})
 }
