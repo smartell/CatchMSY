@@ -5,7 +5,7 @@ devtools::install_github("smartell/CatchMSY",build.vignettes=TRUE)
 library(catchMSY)
 
 .NSAMP <- 5000
-.NCORE <- 8
+.NCORE <- 1
 .THEME <- theme_bw(12)
 
 # Create a new stockID
@@ -49,39 +49,53 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 #|-----------------------------------------------------------------|#
 #|	CATCH ONLY METHOD                                              |#
 #|-----------------------------------------------------------------|#
-	M0      <- lutjanid
-	# remove biomass data for the Catch only Method
-	M0$data <- M0$data[,1:2]
+		M0      <- lutjanid
+		# remove biomass data for the Catch only Method
+		M0$data <- M0$data[,1:2]
 
-	# generate samples from parameter samples
-	M0      <- sample.sid(M0,.NSAMP)
+		# generate samples from parameter samples
+		M0      <- sample.sid(M0,.NSAMP)
 
-	# run model with each sample
-	M0      <- sir.sid(M0,ncores=.NCORE)
+		# run model with each sample
+		M0      <- sir.sid(M0,ncores=.NCORE)
 
 	# Get MSY statistics
 	M0$msy.stats <- summary(M0$S[M0$idx,3])
+
+	xmax <- max(M0$S[,"msy"])*2
+	ymax <- 1200
+	hist(M0$S[M0$idx,"msy"], xlim=c(0, xmax), ylim=c(0,ymax), xlab="MSY")
 
 
 #|------------------------------------------------------------|#
 #|	CATCH WITH BIOMASS                                        |#
 #|----------------------------------------------------------- |#
+	
 	M1      <- lutjanid
+	M1      <- sample.sid(M1,.NSAMP)
+	M1      <- sir.sid(M1,ncores=.NCORE)
+	M1$msy.stats <- summary(M1$S[M1$idx,3])
+
+	par(new=TRUE)
+	hist(M1$S[M1$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#AA000050", xaxt="n", yaxt="n", xlab="", ylab="")
+
+
+	## adjust prior to have larger upper bound on possible MSY
 	M2      <- lutjanid
 	M2$dfPriorInfo$par1[3] = quantile(lutjanid$data$catch,0.05)
 	M2$dfPriorInfo$par2[3] = 1.5*quantile(lutjanid$data$catch,0.95)
 
-	# generate samples from parameter samples
-	M1      <- sample.sid(M1,.NSAMP)
+	# generate random samples from parameter ranges
 	M2      <- sample.sid(M2,.NSAMP)
 
 	# run model with each sample
-	M1      <- sir.sid(M1,ncores=.NCORE)
 	M2      <- sir.sid(M2,ncores=.NCORE)
 
 	# Get MSY statistics
-	M1$msy.stats <- summary(M1$S[M1$idx,3])
 	M2$msy.stats <- summary(M2$S[M2$idx,3])
+
+	par(new=TRUE)
+	hist(M2$S[M2$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#33000050", xaxt="n", yaxt="n", xlab="", ylab="")
 
 #|----------------------------------------------------------- |#
 #|	SIMULATION MODEL                                          |#
@@ -108,9 +122,11 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	Ssim$la.cv <- 0.15 ## adjust length CV to simulate messy data
 	Rsim <- catchMSYModel(Ssim)
 
-	## add generated length comp data to observed catch data
+	## add generated length comp data over time to observed catch data
 	M3 <- lutjanid
-	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], t(Rsim$Qp), "ESS"=rep(1,nrow(lutjanid$data)))
+	lc <- t(Rsim$LF)
+	ess <- rep(0.00001, nrow(lc))
+	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], lc, "ess"=ess)
 
 	# generate samples from parameter samples
 	M3      <- sample.sid(M3,.NSAMP)
@@ -120,6 +136,47 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 
 	# Get MSY statistics
 	M3$msy.stats <- summary(M3$S[M3$idx,3])
+
+	par(new=TRUE)
+	hist(M3$S[M3$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#00AA0050", xaxt="n", yaxt="n", xlab="", ylab="")
+
+
+	## add generated length comp data over time to observed catch data
+	M4 <- lutjanid
+	lc <- t(Rsim$LF)
+	ess <- rep(0.00001, nrow(lc))
+	M4$data <- cbind(lutjanid$data, lc, "ess"=ess)
+
+	# generate samples from parameter samples
+	M4      <- sample.sid(M4,.NSAMP)
+
+	# run model with each sample
+	M4      <- sir.sid(M4,ncores=.NCORE)
+
+	# Get MSY statistics
+	M4$msy.stats <- summary(M4$S[M4$idx,3])
+
+	par(new=TRUE)
+	hist(M4$S[M4$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#00AA0050", xaxt="n", yaxt="n", xlab="", ylab="")
+
+
+
+	## less than all years of length comp data
+	lc_sub <- lc
+	lc_sub[1:(nrow(lc)-1),] <- NA
+	ESS <- rep(NA, nrow(lc_sub))
+	ESS[which(is.na(rowSums(lc_sub))==FALSE)] <- 0.0002
+	M3v2 <- M3
+	M3v2$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], lc_sub, "ESS"=ESS)
+
+	M3v2 <- sample.sid(M3v2,.NSAMP)
+	M3v2 <- sir.sid(M3v2,ncores=.NCORE)
+	M3v2$msy.stats <- summary(M3v2$S[M3v2$idx,3])
+
+	par(new=TRUE)
+	hist(M3v2$S[M3v2$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#00FF0050", xaxt="n", yaxt="n", xlab="", ylab="")
+
+
 
 #|-------------------------------------------------------|#
 #|	CATCH WITH MEAN LENGTH                               |#
@@ -131,17 +188,33 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	Rsim <- catchMSYModel(Ssim)
 
 	## add generated mean length to observed catch data
-	M4 <- lutjanid
-	M4$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], "meanlength"=Rsim$ML)
+	M5 <- lutjanid
+	M5$data <- cbind(lutjanid$data, "meanlength"=Rsim$ML)
 
 	# generate samples from parameter samples
-	M4      <- sample.sid(M4,.NSAMP)
+	M5      <- sample.sid(M5,.NSAMP)
 
 	# run model with each sample
-	M4      <- sir.sid(M4,ncores=.NCORE)
+	M5      <- sir.sid(M5,ncores=.NCORE)
 
 	# Get MSY statistics
-	M4$msy.stats <- summary(M4$S[M4$idx,3])
+	M5$msy.stats <- summary(M5$S[M5$idx,3])
+
+	par(new=TRUE)
+	hist(M5$S[M5$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#0000AA50", xaxt="n", yaxt="n", xlab="", ylab="")
+
+
+	## less than all years of mean length
+	ML_sub <- c(rep(NA, length(Rsim$ML)-10), Rsim$ML[(length(Rsim$ML)-9):length(Rsim$ML)])
+	M4v2 <- M4
+	M4v2$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], "meanlength"=ML_sub)
+
+	M4v2 <- sample.sid(M4v2,.NSAMP)
+	M4v2 <- sir.sid(M4v2,ncores=.NCORE)
+	M4v2$msy.stats <- summary(M4v2$S[M4v2$idx,3])
+
+	par(new=TRUE)
+	hist(M4v2$S[M4v2$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#0000FF50", xaxt="n", yaxt="n", xlab="", ylab="")
 
 
 #|-------------------------------------------------|#

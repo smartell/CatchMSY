@@ -12,6 +12,8 @@ sample.sid <- function(sID,n=100)
 			.p1 <- dfPriorInfo$par1[.i]
 			.p2 <- dfPriorInfo$par2[.i]
 			
+			## generates n number of draws from .fn distribution given parameters .p1 and .p2
+			## for each parameter (m, fmsy, msy)
 			.xx <-  do.call(.fn,list(n,.p1,.p2))
 
 			S   <- cbind(S,.xx)
@@ -40,6 +42,7 @@ sir.sid <- function(sID,ncores=1)
 
 		#shared memory parallelism
 		# doMC::registerDoMC(nc)
+		### runs catchMSY_model -- if different checks are TRUE, removes this parameter combination from the possibilities
 		if(ncores > 1)
 		{
 			registerDoParallel(cores=ncores)
@@ -73,11 +76,13 @@ sir.sid <- function(sID,ncores=1)
 		sID$ps.ft  <- plyr::ldply(cmsy,function(x){c("ft"=x[['ft']])})
 		sID$wts    <- exp(-(sID$nll + sID$prior))
 
+		## non-statistical criterion - sample combinations that meet criterion
 		sID$idx    <- which(sID$code==0)
-		# sample index where code==0
+		## statistical criterion - sample combinations that nll!=0
+		## choose samples with the highest probability - best likelihoods
 		ic <- which(sID$nll!=0)
 		if( length(ic) > 0 ){
-			prb <- unlist(sID$wts)[ic]
+			prb <- sID$wts[ic,1]
 			sID$idx  <- sample(ic,length(ic),replace=TRUE,prob=prb)
 		}
 		return(sID)

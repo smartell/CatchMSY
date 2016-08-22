@@ -86,7 +86,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		nyr  <- length(year)
 		
 
-		N    <- matrix(nrow=length(year),ncol=length(age))
+		N    <- C <- matrix(nrow=length(year),ncol=length(age))
 		N[1,]<- ro*lx
 		ft   <- vector("numeric",length=length(year))
 		bpls <- vector("numeric",length=length(year))
@@ -102,16 +102,19 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			# bpls[i]    <- spls*(alpha*N[i,nage]+rho*)
 			if(i < nyr)
 			{
-			N[i+1,1]   <- so*ssb/(1+beta*ssb)
+				N[i+1,1]   <- so*ssb/(1+beta*ssb)
 				N[i+1,apo] <- N[i,amo] * st[amo]
 				N[i+1,nage]<- N[i+1,nage]+N[i,nage] * st[nage]
 			}
+			C[i,] = N[i,] * (1 - st) * (ft[i] * va) / (m + ft[i] * va)
 		}
 		
+		ct  <- rowSums(C)
 		bt  <- as.vector(N %*% (va*wa))
 		sbt <- as.vector(N %*% fa)
 		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
+
 
 		
 		#----------------------------------------------#
@@ -144,7 +147,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
-		Q   <- 	Qp <- ML <- NULL
+		Q   <- 	Qp <- ML <- LF <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -180,9 +183,14 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			# Size comp likelihood here
 			bw <- 1.0 #bin width = 1 cm
 			A  <- max(age)
-			l1 <- floor(la[1]-3*la.sd[1])
-			l2 <- ceiling(la[A]+3*la.sd[A])
-			bin  <- seq(1,l2+bw,by=bw)
+			if(all(grepl("lc.", colnames(data))==FALSE)){
+				l1 <- floor(la[1]-3*la.sd[1])
+				l2 <- ceiling(la[A]+3*la.sd[A])
+				bin  <- seq(1,l2+bw,by=bw)
+			}
+			if(any(grepl("lc.", colnames(data)))){
+				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
+			}
 			bw <- diff(bin[1:2])
 			ALK<- sapply(bin+0.5*bw,pnorm,mean=la,sd=la.sd)-sapply(bin-0.5*bw,pnorm,mean=la,sd=la.sd)
 			
@@ -195,14 +203,19 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
 			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
 			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
-				rownames(Q) <- rownames(Qp) <- paste0("LC.", bin)
+			LF <- sapply(ii, function(x) rmultinom(n=1, size=ct[x], prob=Qp[,x]))
+				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
 
-			if(any(grepl("LC.", colnames(data)))){
-				.qobs <- data[,grep("LC.", colnames(data))]*data[,"ESS"]
-				.qexp <- t(Qp)
-				nll[3] <- -1.0*sum(sapply(1:nyr, function(yy) dmultinom(x=.qobs[yy,], prob=.qexp[yy,], log=TRUE)))
+			if(any(grepl("lc.", colnames(data)))){
+				lc <- data[,grep("lc.", colnames(data))]
+				ess <- data[,"ess"]
+				il <- which(is.na(rowSums(lc))==FALSE)
+				.qobs <- lc[il,]
+				.qexp <- t(Qp[,il])
+				nll[3] <- -1.0*sum(sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE)*ess[y]))
 			}
 
+			# Mealn length likelihood
 			if(with(sID$data,exists("meanlength"))){
 				if( any(!is.na(data$meanlength)) ) {
 					ii     <- which(!is.na(data$meanlength))
@@ -214,7 +227,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 			# matplot((Q),type="l")
 
-			# Mean length likelihood
+
 
 
 		}
@@ -243,7 +256,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF)
 		return(out)
 	})
 }
