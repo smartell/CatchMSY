@@ -209,8 +209,8 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				.qobs <- lc[il,]
-				.qexp <- t(Qp[,il])
+				.qobs <- lc
+				.qexp <- t(Qp)
 				nll[3] <- -1.0*sum(sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE)))
 			}
 

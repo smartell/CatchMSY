@@ -1,11 +1,12 @@
 #lutj.R
 #load the library 
 #If you need to obtain the catch MSY package use:
-devtools::install_github("smartell/CatchMSY",build.vignettes=TRUE)
+# devtools::install_github("smartell/CatchMSY",build.vignettes=TRUE)
+devtools::install_github("merrillrudd/CatchMSY",build.vignettes=TRUE)
 library(catchMSY)
 
 .NSAMP <- 5000
-.NCORE <- 1
+.NCORE <- 2
 .THEME <- theme_bw(12)
 
 # Create a new stockID
@@ -119,14 +120,14 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 
 	## simulate length comp data
 	Ssim <- lutjanid
-	Ssim$la.cv <- 0.15 ## adjust length CV to simulate messy data
+	Ssim$la.cv <- 0.10 ## adjust length CV to simulate messy data
 	Rsim <- catchMSYModel(Ssim)
 
 	## add generated length comp data over time to observed catch data
 	M3 <- lutjanid
 	lc <- t(Rsim$LF)
-	ess <- rep(0.00001, nrow(lc))
-	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], lc, "ess"=ess)
+	lc2 <- t(Rsim2$LF)
+	M3$data <- cbind(lutjanid$data[,-grep("biomass", colnames(lutjanid$data))], lc2)
 
 	# generate samples from parameter samples
 	M3      <- sample.sid(M3,.NSAMP)
@@ -141,11 +142,10 @@ lutjanid$dfPriorInfo$par2[3] = quantile(lutjanid$data$catch,0.95)
 	hist(M3$S[M3$idx,"msy"], xlim=c(0, xmax), ylim=c(0, ymax), col="#00AA0050", xaxt="n", yaxt="n", xlab="", ylab="")
 
 
-	## add generated length comp data over time to observed catch data
+	## add generated length comp data over time to observed catch data and biomass data
 	M4 <- lutjanid
 	lc <- t(Rsim$LF)
-	ess <- rep(0.00001, nrow(lc))
-	M4$data <- cbind(lutjanid$data, lc, "ess"=ess)
+	M4$data <- cbind(lutjanid$data, lc)
 
 	# generate samples from parameter samples
 	M4      <- sample.sid(M4,.NSAMP)
