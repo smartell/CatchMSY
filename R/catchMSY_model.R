@@ -203,7 +203,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
 			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
 			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
-			LF <- sapply(ii, function(x) rmultinom(n=1, size=ct[x], prob=Qp[,x]))
+			LF <- sapply(ii, function(x) rmultinom(n=1, size=sqrt(ct[x]), prob=Qp[,x])) ## account for overdispersion, with c = 2
 				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
 
 			if(any(grepl("lc.", colnames(data)))){
