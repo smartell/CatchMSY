@@ -220,7 +220,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 					ii     <- which(!is.na(data$meanlength))
 					.mlobs    <- log(data$meanlength[ii])
 					.mlexp    <- log(ML[ii])
-					.se    <- 1
+					.se    <- data$meanlength.se[ii]
 					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
 				}
 			}
