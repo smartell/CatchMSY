@@ -203,15 +203,16 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
 			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
 			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
-			LF <- sapply(ii, function(x) rmultinom(n=1, size=sqrt(1000), prob=Qp[,x]))
+			LF <- sapply(ii, function(x) rmultinom(n=1, size=1000, prob=Qp[,x]))
 				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
 
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				.qobs <- lc
-				.qexp <- t(Qp)
-				nll[3] <- -1.0*sum(sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE)))
+				.qobs <- lc[il,]
+				scale <- sapply(1:nrow(.qobs), function(y) dmultinom(x=.qobs[y,],prob=.qobs[y,]/sum(.qobs[y,]), log=TRUE))
+				.qexp <- t(Qp)[il,]
+				nll[3] <- -1.0*sum(sapply(1:nrow(.qobs), function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE) - scale[y]))
 			}
 
 			# Mealn length likelihood
