@@ -152,7 +152,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		if( code == 0 ){
 			# Relative abundance (trend info)
 			# If code==0, and abundance data exists, compute nll
-			if(with(sID$data,exists("index"))){
+			if(any(grepl("index", colnames(data)))){
 				if( any(!is.na(data$index)) ) {
 					 ii <- which(!is.na(data$index))
 					.it <- data$index[ii]
@@ -169,7 +169,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 
 			# Absolute biomass index.
-			if(with(sID$data,exists("biomass"))){
+			if(any(grepl("biomass", colnames(data)))){
 				if( any(!is.na(data$biomass)) ) {
 					ii     <- which(!is.na(data$biomass))
 					.it    <- log(data$biomass[ii])
@@ -215,7 +215,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			}
 
 			# Mealn length likelihood
-			if(with(sID$data,exists("meanlength"))){
+			if(any(grepl("meanlength", colnames(data)))){
 				if( any(!is.na(data$meanlength)) ) {
 					ii     <- which(!is.na(data$meanlength))
 					.mlobs    <- log(data$meanlength[ii])
