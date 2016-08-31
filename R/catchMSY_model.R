@@ -209,10 +209,10 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				.qobs <- lc[il,]
-				scale <- sapply(1:nrow(.qobs), function(y) dmultinom(x=.qobs[y,],prob=.qobs[y,]/sum(.qobs[y,]), log=TRUE))
-				.qexp <- t(Qp)[il,]
-				nll[3] <- -1.0*sum(sapply(1:nrow(.qobs), function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE) - scale[y]))
+				.qobs <- lc
+				scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
+				.qexp <- t(Qp)
+				nll[3] <- -1.0*sum(sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE) - scale))
 			}
 
 			# Mealn length likelihood
