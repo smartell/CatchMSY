@@ -34,7 +34,7 @@ new_sID <- function(id  = "Stock Label",
 					fmsy = 0.15,
 					msy  = 1.0,
 					binwidth = 1,
-					la.cv=0.1
+					la.cv=0.1,
 					dfile="")
 {
 	S     <- list()
