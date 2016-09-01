@@ -181,7 +181,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 
 			#
 			# Size comp likelihood here
-			bw <- 1.0 #bin width = 1 cm
+			bw <- 1 #bin width = 1 cm
 			A  <- max(age)
 			if(all(grepl("lc.", colnames(data))==FALSE)){
 				l1 <- floor(la[1]-3*la.sd[1])
@@ -192,7 +192,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
 			}
 			bw <- diff(bin[1:2])
-			ALK<- sapply(bin+0.5*bw,pnorm,mean=la,sd=la.sd)-sapply(bin-0.5*bw,pnorm,mean=la,sd=la.sd)
+			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(binwidth/2),pnorm,mean=la,sd=la.sd)
 			
 			falk <- function(ii)
 			{
@@ -212,9 +212,13 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				.qobs <- lc
 				scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
 				.qexp <- t(Qp)
-				nll_lc <- sapply(il, function(y) dmultinom(x=as.numeric(.qobs[y,]), prob=.qexp[y,], log=TRUE))
-				nll[3] <- -1.0*sum(nll_lc - scale)
-				# nll[3] <- -1.0*sum(sapply(il, function(y) dnorm(x=.qobs[y,], prob=.qexp[y,], log=TRUE)))
+
+				# plot(.qexp[20,])
+				# par(new=TRUE)
+				# plot(as.numeric(.qobs[20,]), type="h")
+
+				ll_lc <- sapply(il, function(y) dmultinom(x=as.numeric(.qobs[y,]), prob=.qexp[y,], log=TRUE))
+				nll[3] <- -1.0*sum(ll_lc - scale)
 			}
 
 			# Mealn length likelihood
