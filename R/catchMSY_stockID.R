@@ -33,6 +33,7 @@ new_sID <- function(id  = "Stock Label",
 					m    = 0.2,
 					fmsy = 0.15,
 					msy  = 1.0,
+					binwidth = 1,
 					dfile="")
 {
 	S     <- list()
@@ -88,7 +89,9 @@ new_sID <- function(id  = "Stock Label",
 					 "index.lse"=0.1,
 					 "biomass"=NA,
 					 "biomass.lse"=NA,
-					 "avgSize"=NA
+					 "meanlength"=NA,
+					 "meanlength.lse"=NA,
+					 "lc.1"=NA
 					)
 	
 	
