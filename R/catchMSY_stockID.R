@@ -34,6 +34,7 @@ new_sID <- function(id  = "Stock Label",
 					fmsy = 0.15,
 					msy  = 1.0,
 					binwidth = 1,
+					la.cv=0.1
 					dfile="")
 {
 	S     <- list()
@@ -47,6 +48,7 @@ new_sID <- function(id  = "Stock Label",
 	S$to   <- to
 	S$a    <- a
 	S$b    <- b
+	S$la.cv <- la.cv
 
 	# maturity parameters
 	S$ah   <- ah
