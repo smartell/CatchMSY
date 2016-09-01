@@ -212,7 +212,9 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				.qobs <- lc
 				scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
 				.qexp <- t(Qp)
-				nll[3] <- -1.0*sum(sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE) - scale))
+				nll_lc <- sapply(il, function(y) dmultinom(x=as.numeric(.qobs[y,]), prob=.qexp[y,], log=TRUE))
+				nll[3] <- -1.0*sum(nll_lc - scale)
+				# nll[3] <- -1.0*sum(sapply(il, function(y) dnorm(x=.qobs[y,], prob=.qexp[y,], log=TRUE)))
 			}
 
 			# Mealn length likelihood
