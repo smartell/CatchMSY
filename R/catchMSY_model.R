@@ -218,7 +218,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				# par(new=TRUE)
 				# plot(as.numeric(.qobs[20,]), type="h")
 
-				ll_lc <- sapply(il, function(y) dmultinom(x=ess[y,]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
+				ll_lc <- sapply(il, function(y) dmultinom(x=ess[y]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
 				nll[3] <- -1.0*sum(ll_lc)
 				# nll[3] <- -1.0*sum(ll_lc - scale)
 			}
