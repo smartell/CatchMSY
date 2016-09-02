@@ -208,17 +208,19 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
+				ess <- data[,grep("ess", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
 				.qobs <- lc
-				scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
 				.qexp <- t(Qp)
 
+				# scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
 				# plot(.qexp[20,])
 				# par(new=TRUE)
 				# plot(as.numeric(.qobs[20,]), type="h")
 
-				ll_lc <- sapply(il, function(y) dmultinom(x=as.numeric(.qobs[y,]), prob=.qexp[y,], log=TRUE))
-				nll[3] <- -1.0*sum(ll_lc - scale)
+				ll_lc <- sapply(il, function(y) dmultinom(x=ess[y,]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
+				nll[3] <- -1.0*sum(ll_lc)
+				# nll[3] <- -1.0*sum(ll_lc - scale)
 			}
 
 			# Mealn length likelihood
