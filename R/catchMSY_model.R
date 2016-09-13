@@ -193,7 +193,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
 			}
 			bw <- diff(bin[1:2])
-			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(binwidth/2),pnorm,mean=la,sd=la.sd)
+			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(bw/2),pnorm,mean=la,sd=la.sd)
 			
 			falk <- function(ii)
 			{
