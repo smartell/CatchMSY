@@ -20,7 +20,8 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		# calcAgeSchedules
 		nage <- max(age)
 		la <- linf*(1.0-exp(-vbk*(age-to)))
-		la.sd <- la.cv*la
+		if(is.null(la.cv)==FALSE) la.sd <- la.cv*la
+		if(is.null(la.cv)) la.sd <- 0.07*la
 		wa <- a*la^b
 		ma <- plogis(age,ah,gh)
 		fa <- wa*ma #fecundity is assumed to be proportional to mature body weight.
