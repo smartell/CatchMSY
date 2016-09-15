@@ -10,10 +10,12 @@
 #' equation \eqn{C =  F/Z*(1-exp(-Z))*B}, for \code{F}. 
 #'
 #' @param sID Stock ID object
+#' @param selex Boolean flag to turn off search across sel50 parameter. 
+#' Set to TRUE when including the prior on sel50. 
 #' @param nlSearch Boolean flag to turn off non-statistical criterion for 
 #' non-linear search. Set to TRUE when using non-linear search routines.
 #' @export
-catchMSYModel <- function(sID,nlSearch=FALSE)
+catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 {
 	with(sID,{
 
@@ -244,11 +246,17 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 		# -------------------------------------------- #
 		# PRIORS                                       #
 		# -------------------------------------------- #
-		pvec <- rep(NA,length=3)
 		# prior for parameters
-		.x    <- c(m,fmsy,msy)
-		pvec <- rep(0,length=3)
-		for(.i in 1:3)
+		if(selex==FALSE){
+			.x    <- c(m,fmsy,msy)
+			vec <- 1:3
+		}
+		if(selex==TRUE){
+			.x <- c(m,fmsy,msy,sel50)
+			vec <- 1:4
+		}
+		pvec <- rep(0,length(vec))
+		for(.i in vec)
 		{
 			.fn <- paste0("d",dfPriorInfo$dist[.i])
 			.p1 <- dfPriorInfo$par1[.i]

@@ -28,9 +28,11 @@ sample.sid <- function(sID,selex=FALSE,n=100)
 
 #' Importance Sampling
 #' @param sID Stock ID object
+#' @param selex Boolean flag to turn off search across sel50 parameter. 
+#' Set to TRUE when including the prior on sel50.
 #' @param nc  Number of cores for parrallel processing.
 #' @export
-sir.sid <- function(sID,ncores=1)
+sir.sid <- function(sID,selex=FALSE,ncores=1)
 {
 	with(sID,{
 		n    <- dim(S)[1]
@@ -54,6 +56,10 @@ sir.sid <- function(sID,ncores=1)
 				sID$m    <- S[i,1]
 				sID$fmsy <- S[i,2]
 				sID$msy  <- S[i,3]
+				if(selex==TRUE){
+					sID$sel50 <- S[i,4]
+					sID$sel95 <- S[i,4]+1
+				}
 				return(catchMSYModel(sID))
 			}
 			cmsy  <- .results			
@@ -63,6 +69,10 @@ sir.sid <- function(sID,ncores=1)
 				sID$m    <- s[1]
 				sID$fmsy <- s[2]
 				sID$msy  <- s[3]
+				if(selex==TRUE){
+					sID$sel50 <- s[4]
+					sID$sel95 <- s[4] + 1
+				}
 				return(catchMSYModel(sID))
 			}
 			cmsy  <- apply(S,1,fn)			
