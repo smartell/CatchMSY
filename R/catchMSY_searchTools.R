@@ -1,9 +1,9 @@
 #' Generate prior samples for importance sampling.
-#' @description Draw random samples from specified parameter ranges in the 
-#' stock ID object.
 #' @param sID species ID list
 #' @param selex default FALSE - only samples from parameters m, fmsy, and msy. Set to TRUE to also sample sel50
 #' @param n number of samples to generate
+#' @description Draw random samples from specified parameter ranges in the 
+#' stock ID object.
 #' @export
 sample.sid <- function(sID,selex=FALSE,n=100)
 {
