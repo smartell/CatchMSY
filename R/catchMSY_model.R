@@ -224,7 +224,7 @@ catchMSYModel <- function(sID,nlSearch=FALSE)
 				# nll[3] <- -1.0*sum(ll_lc - scale)
 			}
 
-			# Mealn length likelihood
+			# Mean length likelihood
 			if(any(grepl("meanlength", colnames(data)))){
 				if( any(!is.na(data$meanlength)) ) {
 					ii     <- which(!is.na(data$meanlength))

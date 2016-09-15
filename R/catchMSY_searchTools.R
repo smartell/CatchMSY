@@ -2,11 +2,13 @@
 #' @description Draw random samples from specified parameter ranges in the 
 #' stock ID object.
 #' @export
-sample.sid <- function(sID,n=100)
+sample.sid <- function(sID,selex=FALSE,n=100)
 {
 	within(sID,{
 		S <- NULL
-		for(.i in 1:3)
+		if(selex==FALSE) vec <- 1:3
+		if(selex==TRUE) vec <- 1:4
+		for(.i in vec)
 		{
 			.fn <- paste0("r",dfPriorInfo$dist[.i])
 			.p1 <- dfPriorInfo$par1[.i]
@@ -18,7 +20,8 @@ sample.sid <- function(sID,n=100)
 
 			S   <- cbind(S,.xx)
 		}
-		colnames(S) <- c("m","fmsy","msy")
+		if(selex==FALSE) colnames(S) <- c("m","fmsy","msy")
+		if(selex==TRUE) colnames(S) <- c("m","fmsy","msy","sel50")
 	})
 }
 
