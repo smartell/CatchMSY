@@ -151,6 +151,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
 		Q   <- 	Qp <- ML <- LF <- NULL
+		.zt <- .zbar <- .it <- .mlobs <- .mlexp <- .qobs <- .qexp <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -221,8 +222,11 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 				# par(new=TRUE)
 				# plot(as.numeric(.qobs[20,]), type="h")
 
-				ll_lc <- sapply(il, function(y) dmultinom(x=ess[y]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
-				nll[3] <- -1.0*sum(ll_lc)
+				fit <- dirmult(data=.qobs)
+				# ll_lc <- sapply(il, function(y) 0.5*(sum(log(2*pi*((1-.qexp[y,])*.qexp[y,] + 0.1/length(.qexp[y,])))) - sum(length(.qexp[y,])*log(sqrt(1/min(sum(.qobs[y,]),1000))))) + sum(log(exp((-(.qobs[y,]-.qexp[y,])^2)/(2*((1-.qexp[y,])*.qexp[y,]+0.1/length(.qexp[y,]))*(1/min(sum(.qobs[y,]),1000)))) + 0.01)))
+				# ll_lc <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE))
+				# ll_lc <- sapply(il, function(y) dmultinom(x=ess[y]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
+				nll[3] <- -1.0*fit$loglik
 				# nll[3] <- -1.0*sum(ll_lc - scale)
 			}
 
@@ -273,7 +277,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,it=.it,mlobs=.mlobs, mlexp=mlexp,qobs=.qobs, qexp=.qexp)
 		return(out)
 	})
 }
