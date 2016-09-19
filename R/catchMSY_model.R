@@ -277,7 +277,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,it=.it,mlobs=.mlobs, mlexp=mlexp,qobs=.qobs, qexp=.qexp)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,it=.it,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
 		return(out)
 	})
 }
