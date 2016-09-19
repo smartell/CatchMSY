@@ -151,7 +151,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
 		Q   <- 	Qp <- ML <- LF <- NULL
-		.zt <- .zbar <- .it <- .mlobs <- .mlexp <- .qobs <- .qexp <- NULL
+		.zt <- .zbar <- .btobs <- .mlobs <- .mlexp <- .qobs <- .qexp <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -176,10 +176,10 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("biomass", colnames(data)))){
 				if( any(!is.na(data$biomass)) ) {
 					ii     <- which(!is.na(data$biomass))
-					.it    <- log(data$biomass[ii])
+					.btobs    <- log(data$biomass[ii])
 					.bt    <- log(bt[ii])
 					.se    <- data$biomass.lse[ii]
-					nll[2] <- -1.0*sum(dnorm(.it,.bt,.se,log=TRUE))
+					nll[2] <- -1.0*sum(dnorm(.btobs,.bt,.se,log=TRUE))
 				}
 			}
 
@@ -277,7 +277,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,it=.it,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,btobs=.btobs,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
 		return(out)
 	})
 }
