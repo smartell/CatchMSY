@@ -213,10 +213,10 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
+				tiny <- 1e-10
 				.qobs <- lc + tiny
 				.qexp <- t(Qp)
 
-				tiny <- 1e-10
 				like_lc <- sapply(il, function(y) ddirichlet(x=as.numeric(.qobs[y,]/sum(.qobs[y,])), alpha=.qexp[y,]))
 				nll[3] <- -1.0*sum(log(like_lc))
 			}
