@@ -105,7 +105,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			# bpls[i]    <- spls*(alpha*N[i,nage]+rho*)
 			if(i < nyr)
 			{
-				N[i+1,1]   <- so*ssb/(1+beta*ssb) ## add recruitment anomalies
+				N[i+1,1]   <- so*ssb/(1+beta*ssb)  #add rec devs here.  exp(sigma_r * random norm)
 				N[i+1,apo] <- N[i,amo] * st[amo]
 				N[i+1,nage]<- N[i+1,nage]+N[i,nage] * st[nage]
 			}
