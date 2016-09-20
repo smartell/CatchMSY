@@ -151,7 +151,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
 		Q   <- 	Qp <- ML <- LF <- NULL
-		.zt <- .zbar <- .btobs <- .mlobs <- .mlexp <- .qobs <- .qexp <- NULL
+		.zt <- .zbar <- .btobs <- .mlobs <- .mlexp <- .qobs <- .qexp <- like_lc <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -212,22 +212,13 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
-				ess <- data[,grep("ess", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				.qobs <- lc
+				.qobs <- lc + tiny
 				.qexp <- t(Qp)
 
-				# scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
-				# plot(.qexp[20,])
-				# par(new=TRUE)
-				# plot(as.numeric(.qobs[20,]), type="h")
-
-				fit <- dirmult(data=.qobs)
-				# ll_lc <- sapply(il, function(y) 0.5*(sum(log(2*pi*((1-.qexp[y,])*.qexp[y,] + 0.1/length(.qexp[y,])))) - sum(length(.qexp[y,])*log(sqrt(1/min(sum(.qobs[y,]),1000))))) + sum(log(exp((-(.qobs[y,]-.qexp[y,])^2)/(2*((1-.qexp[y,])*.qexp[y,]+0.1/length(.qexp[y,]))*(1/min(sum(.qobs[y,]),1000)))) + 0.01)))
-				# ll_lc <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE))
-				# ll_lc <- sapply(il, function(y) dmultinom(x=ess[y]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
-				nll[3] <- -1.0*fit$loglik
-				# nll[3] <- -1.0*sum(ll_lc - scale)
+				tiny <- 1e-10
+				like_lc <- sapply(il, function(y) ddirichlet(x=as.numeric(.qobs[y,]/sum(.qobs[y,])), alpha=.qexp[y,]))
+				nll[3] <- -1.0*sum(log(like_lc))
 			}
 
 			# Mean length likelihood
@@ -240,7 +231,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
 				}
 			}
-			# matplot((Q),type="l")
 
 
 
@@ -277,7 +267,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,btobs=.btobs,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,btobs=.btobs,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp,like_lc=like_lc)
 		return(out)
 	})
 }
