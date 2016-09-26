@@ -214,20 +214,12 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 				lc <- data[,grep("lc.", colnames(data))]
 				ess <- data[,grep("ess", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				.qobs <- lc
+				tiny <- 1e-10
+				.qobs <- lc + tiny
 				.qexp <- t(Qp)
 
-				# scale <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), log=TRUE))
-				# plot(.qexp[20,])
-				# par(new=TRUE)
-				# plot(as.numeric(.qobs[20,]), type="h")
-
-				fit <- dirmult(data=.qobs)
-				# ll_lc <- sapply(il, function(y) 0.5*(sum(log(2*pi*((1-.qexp[y,])*.qexp[y,] + 0.1/length(.qexp[y,])))) - sum(length(.qexp[y,])*log(sqrt(1/min(sum(.qobs[y,]),1000))))) + sum(log(exp((-(.qobs[y,]-.qexp[y,])^2)/(2*((1-.qexp[y,])*.qexp[y,]+0.1/length(.qexp[y,]))*(1/min(sum(.qobs[y,]),1000)))) + 0.01)))
-				# ll_lc <- sapply(il, function(y) dmultinom(x=.qobs[y,], prob=.qexp[y,], log=TRUE))
-				# ll_lc <- sapply(il, function(y) dmultinom(x=ess[y]*(as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,]))), prob=.qexp[y,], log=TRUE))
-				nll[3] <- -1.0*fit$loglik
-				# nll[3] <- -1.0*sum(ll_lc - scale)
+				like_lc <- sapply(il, function(y) ddirichlet(x=as.numeric(.qobs[y,]/sum(.qobs[y,])), alpha=.qexp[y,]))
+				nll[3] <- -1.0*sum(log(like_lc))
 			}
 
 			# Mean length likelihood
