@@ -213,11 +213,16 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				tiny <- 1e-10
-				.qobs <- lc + tiny
+				# tiny <- 1e-10
+				# .qobs <- lc + tiny
+				.qobs <- lc
 				.qexp <- t(Qp)
 
-				like_lc <- sapply(il, function(y) ddirichlet(x=as.numeric(.qobs[y,]/sum(.qobs[y,])), alpha=.qexp[y,]))
+				dmult <- function(n, obs, pred, theta){
+					like <- (gamma(n+1)/sum(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*sum((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
+					return(like)
+				}
+				like_lc <- sapply(il, function(y) dmult(n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], theta=1/nrow(lc)))
 				nll[3] <- -1.0*sum(log(like_lc))
 			}
 
