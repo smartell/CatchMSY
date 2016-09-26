@@ -222,13 +222,13 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 				# lines(.qexp[20,])
 
 				dmult <- function(theta, n, obs, pred, nll=FALSE){
-					like <- (gamma(n+1)/sum(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*sum((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
+					like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
 					if(nll==TRUE) return(-log(like))
 					if(nll==FALSE) return(like)
 				}
-				theta_vec <- sapply(il, function(y) optimize(dmult, interval=c(0,10), n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], nll=TRUE)$minimum)
-				like_lc <- sapply(il, function(y) dmult(n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], theta=theta_vec[y], nll=FALSE))
-				nll[3] <- -1.0*sum(log(like_lc))
+				theta <- optimize(dmult, interval=c(0,10), n=nrow(lc), obs=.qobs/rowSums(.qobs), pred=.qexp, nll=TRUE)$minimum
+				like <- dmult(n=nrow(lc), obs=.qobs/rowSums(.qobs), pred=.qexp, theta=theta, nll=FALSE)
+				nll[3] <- -1.0*log(like)
 			}
 
 			# Mean length likelihood
