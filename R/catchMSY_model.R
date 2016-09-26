@@ -151,7 +151,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
 		Q   <- 	Qp <- ML <- LF <- NULL
-		.zt <- .zbar <- .btobs <- .mlobs <- .mlexp <- .qobs <- .qexp <- NULL
+		.zt <- .zbar <- .btobs <- .mlobs <- .mlexp <- .qobs <- .qexp <- like_lc <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -212,7 +212,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
-				ess <- data[,grep("ess", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
 				tiny <- 1e-10
 				.qobs <- lc + tiny
@@ -232,7 +231,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
 				}
 			}
-			# matplot((Q),type="l")
 
 
 
@@ -268,6 +266,8 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            wa = wa, 
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
+		            nll_noLC=sum(nll[-3],na.rm=TRUE),
+		       		like_lc=sum(like_lc),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,btobs=.btobs,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
 		return(out)
