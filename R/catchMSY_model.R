@@ -213,14 +213,9 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				# tiny <- 1e-10
-				# .qobs <- lc + tiny
 				.qobs <- lc
 				.qexp <- t(Qp)
-
-				# plot(as.numeric(.qobs[20,])/sum(as.numeric(.qobs[20,])))
-				# lines(.qexp[20,])
-
+				
 				dmult <- function(theta, n, obs, pred, nll=FALSE){
 					like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
 					if(nll==TRUE) return(-log(like))
