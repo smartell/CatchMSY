@@ -218,8 +218,8 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 				.qobs <- lc
 				.qexp <- t(Qp)
 
-				plot(as.numeric(.qobs[20,])/sum(as.numeric(.qobs[20,])))
-				lines(.qexp[20,])
+				# plot(as.numeric(.qobs[20,])/sum(as.numeric(.qobs[20,])))
+				# lines(.qexp[20,])
 
 				dmult <- function(theta, n, obs, pred, nll=FALSE){
 					like <- (gamma(n+1)/sum(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*sum((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
