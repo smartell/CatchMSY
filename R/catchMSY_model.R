@@ -218,11 +218,16 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 				.qobs <- lc
 				.qexp <- t(Qp)
 
-				dmult <- function(n, obs, pred, theta){
+				plot(as.numeric(.qobs[20,])/sum(as.numeric(.qobs[20,])))
+				lines(.qexp[20,])
+
+				dmult <- function(theta, n, obs, pred, nll=FALSE){
 					like <- (gamma(n+1)/sum(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*sum((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
-					return(like)
+					if(nll==TRUE) return(-log(like))
+					if(nll==FALSE) return(like)
 				}
-				like_lc <- sapply(il, function(y) dmult(n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], theta=1/nrow(lc)))
+				opt <- optimize(dmult, interval=c(0,10), n=nrow(lc), obs=as.numeric(.qobs[1,])/sum(as.numeric(.qobs[1,])), pred=.qexp[1,], nll=TRUE)
+				like_lc <- sapply(il, function(y) dmult(n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], theta=opt$minimum, nll=FALSE))
 				nll[3] <- -1.0*sum(log(like_lc))
 			}
 
@@ -271,8 +276,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            wa = wa, 
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
-		            nll_noLC=sum(nll[-3],na.rm=TRUE),
-		       		like_lc=sum(like_lc),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,btobs=.btobs,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
 		return(out)
