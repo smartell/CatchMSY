@@ -226,8 +226,8 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					if(nll==TRUE) return(-log(like))
 					if(nll==FALSE) return(like)
 				}
-				opt <- optimize(dmult, interval=c(0, 10), n=nrow(lc), obs=as.numeric(.qobs[1,])/sum(as.numeric(.qobs[1,])), pred=.qexp[1,], nll=TRUE)
-				like_lc <- sapply(il, function(y) dmult(n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], theta=opt$minimum, nll=FALSE))
+				theta_vec <- sapply(il, function(y) optimize(dmult, interval=c(0,10), n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], nll=TRUE)$minimum)
+				like_lc <- sapply(il, function(y) dmult(n=nrow(lc), obs=as.numeric(.qobs[y,])/sum(as.numeric(.qobs[y,])), pred=.qexp[y,], theta=theta_vec[y], nll=FALSE))
 				nll[3] <- -1.0*sum(log(like_lc))
 			}
 
