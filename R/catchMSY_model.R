@@ -213,12 +213,17 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				tiny <- 1e-10
-				.qobs <- lc + tiny
+				.qobs <- lc
 				.qexp <- t(Qp)
-
-				like_lc <- sapply(il, function(y) ddirichlet(x=as.numeric(.qobs[y,]/sum(.qobs[y,])), alpha=.qexp[y,]))
-				nll[3] <- -1.0*sum(log(like_lc))
+				
+				dmult <- function(log_theta, n, obs, pred){
+					theta <- exp(log_theta)
+					like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
+					nll <- -log(like)
+					return(nll)
+				}
+				nll_lc <- optimize(dmult, interval=c(log(1e-20),log(10)), n=nrow(lc), obs=.qobs/rowSums(.qobs), pred=.qexp)
+				nll[3] <- nll_lc$objective
 			}
 
 			# Mean length likelihood
@@ -266,8 +271,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            wa = wa, 
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
-		            nll_noLC=sum(nll[-3],na.rm=TRUE),
-		       		like_lc=sum(like_lc),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=.zt,zbar=.zbar,btobs=.btobs,mlobs=.mlobs, mlexp=.mlexp,qobs=.qobs, qexp=.qexp)
 		return(out)
