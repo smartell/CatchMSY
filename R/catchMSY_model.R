@@ -118,6 +118,8 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
 
+		Q   <- 	Qp <- ML <- LF <- NULL
+
 			bw <- 1 #bin width = 1 cm
 			A  <- max(age)
 			if(all(grepl("lc.", colnames(data))==FALSE)){
@@ -176,7 +178,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
-		Q   <- 	Qp <- ML <- LF <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
