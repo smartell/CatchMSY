@@ -118,35 +118,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
 
-		Q   <- 	Qp <- ML <- LF <- NULL
-
-			bw <- 1 #bin width = 1 cm
-			A  <- max(age)
-			if(all(grepl("lc.", colnames(data))==FALSE)){
-				l1 <- floor(la[1]-3*la.sd[1])
-				l2 <- ceiling(la[A]+3*la.sd[A])
-				bin  <- seq(1,l2+bw,by=bw)
-			}
-			if(any(grepl("lc.", colnames(data)))){
-				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
-			}
-			bw <- diff(bin[1:2])
-			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(bw/2),pnorm,mean=la,sd=la.sd)
-			
-			falk <- function(ii)
-			{
-				iiQ  <- (N[ii,]*va) %*% ALK	
-				return(iiQ)	
-			}
-			ii <- which(!is.na(data$catch))
-			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
-			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
-			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
-			LF <- sapply(ii, function(x) rmultinom(n=1, size=1000, prob=Qp[,x]))
-				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
-
-
-
 		
 		#----------------------------------------------#
 		# NON-STATISTICAL CRITERION                    #
@@ -178,8 +149,36 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
+		Q   <- 	Qp <- LF <- ML <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
+
+			bw <- 1 #bin width = 1 cm
+			A  <- max(age)
+			if(all(grepl("lc.", colnames(data))==FALSE)){
+				l1 <- floor(la[1]-3*la.sd[1])
+				l2 <- ceiling(la[A]+3*la.sd[A])
+				bin  <- seq(1,l2+bw,by=bw)
+			}
+			if(any(grepl("lc.", colnames(data)))){
+				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
+			}
+			bw <- diff(bin[1:2])
+			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(bw/2),pnorm,mean=la,sd=la.sd)
+			
+			falk <- function(ii)
+			{
+				iiQ  <- (N[ii,]*va) %*% ALK	
+				return(iiQ)	
+			}
+			ii <- which(!is.na(data$catch))
+			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
+			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
+			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
+			LF <- sapply(ii, function(x) rmultinom(n=1, size=1000, prob=Qp[,x]))
+				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
+
+
 			# Relative abundance (trend info)
 			# If code==0, and abundance data exists, compute nll
 			if(any(grepl("index", colnames(data)))){
