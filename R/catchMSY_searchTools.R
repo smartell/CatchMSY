@@ -78,7 +78,7 @@ sir.sid <- function(sID,selex=FALSE,ncores=1)
 				}
 				return(catchMSYModel(sID))
 			}
-			cmsy  <- apply(S,1,fn)			
+			cmsy  <- apply(S,1,fn)		
 		}
 
 		sID$code   <- plyr::ldply(cmsy,function(x){c("code"=x[['code']])})
