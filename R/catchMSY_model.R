@@ -118,6 +118,32 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		dt  <- sbt/bo
 		depletion <- sbt[nyr]/bo
 
+			bw <- 1 #bin width = 1 cm
+			A  <- max(age)
+			if(all(grepl("lc.", colnames(data))==FALSE)){
+				l1 <- floor(la[1]-3*la.sd[1])
+				l2 <- ceiling(la[A]+3*la.sd[A])
+				bin  <- seq(1,l2+bw,by=bw)
+			}
+			if(any(grepl("lc.", colnames(data)))){
+				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
+			}
+			bw <- diff(bin[1:2])
+			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(bw/2),pnorm,mean=la,sd=la.sd)
+			
+			falk <- function(ii)
+			{
+				iiQ  <- (N[ii,]*va) %*% ALK	
+				return(iiQ)	
+			}
+			ii <- which(!is.na(data$catch))
+			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
+			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
+			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
+			LF <- sapply(ii, function(x) rmultinom(n=1, size=1000, prob=Qp[,x]))
+				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
+
+
 
 		
 		#----------------------------------------------#
@@ -151,7 +177,6 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
 		Q   <- 	Qp <- ML <- LF <- NULL
-		it <- zt <- zbar <- btobs <- mlobs <- mlexp <- qobs <- qexp <- like_lc <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 			# Relative abundance (trend info)
@@ -159,12 +184,12 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("index", colnames(data)))){
 				if( any(!is.na(data$index)) ) {
 					 ii <- which(!is.na(data$index))
-					it <- data$index[ii]
+					.it <- data$index[ii]
 					.se <- data$index.lse[ii]
 					if(length(.it)>1){
-						zt    <- log(.it) - log(bt[ii])
-						zbar  <- mean(.zt)
-						nll[1] <- -1.0*sum(dnorm(zt,zbar,.se,log=TRUE))
+						.zt    <- log(.it) - log(bt[ii])
+						.zbar  <- mean(.zt)
+						nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
 					}
 					else{
 						cat("There is insufficient data to fit to trends.")
@@ -176,45 +201,20 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("biomass", colnames(data)))){
 				if( any(!is.na(data$biomass)) ) {
 					ii     <- which(!is.na(data$biomass))
-					btobs    <- log(data$biomass[ii])
+					.btobs    <- log(data$biomass[ii])
 					.bt    <- log(bt[ii])
 					.se    <- data$biomass.lse[ii]
-					nll[2] <- -1.0*sum(dnorm(btobs,.bt,.se,log=TRUE))
+					nll[2] <- -1.0*sum(dnorm(.btobs,.bt,.se,log=TRUE))
 				}
 			}
 
 			#
 			# Size comp likelihood here
-			bw <- 1 #bin width = 1 cm
-			A  <- max(age)
-			if(all(grepl("lc.", colnames(data))==FALSE)){
-				l1 <- floor(la[1]-3*la.sd[1])
-				l2 <- ceiling(la[A]+3*la.sd[A])
-				bin  <- seq(1,l2+bw,by=bw)
-			}
-			if(any(grepl("lc.", colnames(data)))){
-				bin <- as.numeric((sapply(1:length(colnames(data)[which(grepl("lc.", colnames(data)))]), function(x) strsplit(colnames(data[which(grepl("lc.", colnames(data)))]), ".", fixed=TRUE)[[x]][2])))
-			}
-			bw <- diff(bin[1:2])
-			ALK<- sapply(bin+(bw/2),pnorm,mean=la,sd=la.sd)-sapply(bin-(bw/2),pnorm,mean=la,sd=la.sd)
-			
-			falk <- function(ii)
-			{
-				iiQ  <- (N[ii,]*va) %*% ALK	
-				return(iiQ)	
-			}
-			ii <- which(!is.na(data$catch))
-			Q  <- sapply(ii,falk) ## vulnerable abundance at length in each year
-			ML <- sapply(ii, function(x) sum(Q[,x]*bin)/sum(Q[,x]))
-			Qp <- sapply(ii, function(x) Q[,x]/sum(Q[,x]))
-			LF <- sapply(ii, function(x) rmultinom(n=1, size=1000, prob=Qp[,x]))
-				rownames(Q) <- rownames(Qp) <- rownames(LF) <- paste0("lc.", bin)
-
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				qobs <- lc
-				qexp <- t(Qp)
+				.qobs <- lc
+				.qexp <- t(Qp)
 				
 				dmult <- function(log_theta, n, obs, pred){
 					theta <- exp(log_theta)
@@ -222,7 +222,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					nll <- -log(like)
 					return(nll)
 				}
-				nll_lc <- optimize(dmult, interval=c(log(1e-20),log(10)), n=nrow(lc), obs=qobs/rowSums(qobs), pred=qexp)
+				nll_lc <- optimize(dmult, interval=c(log(1e-20),log(10)), n=nrow(lc), obs=.qobs/rowSums(.qobs), pred=.qexp)
 				nll[3] <- nll_lc$objective
 			}
 
@@ -230,10 +230,10 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			if(any(grepl("meanlength", colnames(data)))){
 				if( any(!is.na(data$meanlength)) ) {
 					ii     <- which(!is.na(data$meanlength))
-					mlobs    <- log(data$meanlength[ii])
-					mlexp    <- log(ML[ii])
+					.mlobs    <- log(data$meanlength[ii])
+					.mlexp    <- log(ML[ii])
 					.se    <- data$meanlength.lse[ii]
-					nll[4] <- -1.0*sum(dnorm(mlobs,mlexp,.se,log=TRUE))
+					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
 				}
 			}
 
@@ -272,7 +272,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            reck = reck,spr = spr,
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,zt=zt,zbar=zbar,btobs=btobs,mlobs=mlobs, mlexp=mlexp,qobs=qobs, qexp=qexp)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF)
 		return(out)
 	})
 }
