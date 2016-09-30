@@ -218,12 +218,13 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 				
 				dmult <- function(log_theta, n, obs, pred){
 					theta <- exp(log_theta)
-					like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
-					nll <- -log(like)
+					# like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
+					loglike <- lgamma(n+1) - sum(lgamma(n*obs+1)) + lgamma(theta*n) - lgamma(n+theta*n) + sum(lgamma(n*obs+theta*n*pred) - lgamma(n*theta*pred))
+					nll <- -loglike
 					return(nll)
 				}
-				nll_lc <- optimize(dmult, interval=c(log(1e-20),log(10)), n=nrow(lc), obs=.qobs/rowSums(.qobs), pred=.qexp)
-				nll[3] <- nll_lc$objective
+				nll_lc <- sapply(il, function(x) optimize(dmult, interval=c(log(1e-20),log(10)), n=sum(.qobs[x,]), obs=.qobs[x,]/sum(.qobs[x,]), pred=.qexp[x,])$objective)
+				nll[3] <- sum(nll_lc)
 			}
 
 			# Mean length likelihood
