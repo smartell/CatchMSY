@@ -265,7 +265,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			vec <- 1:3
 		}
 		if(selex==TRUE){
-			.x <- c(m,fmsy,msy,sel50)
+			.x <- c(m,fmsy,msy,sel1)
 			vec <- 1:4
 		}
 		pvec <- rep(0,length(vec))
