@@ -4,13 +4,15 @@
 #' for estimating model parameters (M, FMSY, MSY).
 #' @return sID object
 #' @export
-solver <- function(sID)
+solver <- function(sID, selex=FALSE)
 {
 	fn <- function(theta)
 	{
 		sID$m    <- exp(theta[1])
 		sID$fmsy <- exp(theta[2])
 		sID$msy  <- exp(theta[3])
+		if(selex==TRUE & sID$smodel=="logistic") sID$sel1 <- exp(theta[4])
+		if(selex==TRUE & sID$smodel=="dome") warning("Not programmed to estimate dome-shaped selectivity parameters")
 		# nll      <- runModel(sID)$nll	
 		rm      <- catchMSYModel(sID,nlSearch=TRUE)	
 		# print(rm$nll)

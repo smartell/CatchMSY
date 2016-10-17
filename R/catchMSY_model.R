@@ -10,8 +10,8 @@
 #' equation \eqn{C =  F/Z*(1-exp(-Z))*B}, for \code{F}. 
 #'
 #' @param sID Stock ID object
-#' @param selex Boolean flag to turn off search across sel50 parameter. 
-#' Set to TRUE when including the prior on sel50. 
+#' @param selex Boolean flag to turn off search across sel1 (sel50) parameter. 
+#' Set to TRUE when including the prior on sel1 (sel50) 
 #' @param nlSearch Boolean flag to turn off non-statistical criterion for 
 #' non-linear search. Set to TRUE when using non-linear search routines.
 #' @export
@@ -22,12 +22,12 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		# calcAgeSchedules
 		nage <- max(age)
 		la <- linf*(1.0-exp(-vbk*(age-to)))
-		if(is.null(sID$la.cv)==FALSE) la.sd <- la.cv*la
-		if(is.null(sID$la.cv)) la.sd <- 0.07*la
+		la.sd <- la.cv*la
 		wa <- a*la^b
 		ma <- plogis(age,ah,gh)
 		fa <- wa*ma #fecundity is assumed to be proportional to mature body weight.
-		va <- 1.0/(1.0+(exp(-log(19)*((age-sel50)/(sel95-sel50)))));
+		if(smodel=="logistic") va <- 1.0/(1.0+(exp(-log(19)*((age-sel1)/(sel2-sel1)))))
+		# if(smodel=="dome")
 		#todo  add option for survey selectivy (CIE review request.)
 		lx <- exp(-m*(age-min(age)))
 		lx[max(age)] <- lx[max(age)]/(1.0-exp(-m))
