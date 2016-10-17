@@ -36,6 +36,7 @@ new_sID <- function(id  = "Stock Label",
 					binwidth = 1,
 					la.cv=0.1,
 					sigma_r=0,
+					smodel="asymptotic",
 					dfile="")
 {
 	S     <- list()
@@ -59,6 +60,7 @@ new_sID <- function(id  = "Stock Label",
 	# selectivity parameters
 	S$sel50 <- 2.0
 	S$sel95 <- 5.0
+	S$smodel <- smodel
 
 	# population parameters starting values
 	S$m    <- m
