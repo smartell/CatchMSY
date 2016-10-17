@@ -27,7 +27,13 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		ma <- plogis(age,ah,gh)
 		fa <- wa*ma #fecundity is assumed to be proportional to mature body weight.
 		if(smodel=="logistic") va <- 1.0/(1.0+(exp(-log(19)*((age-sel1)/(sel2-sel1)))))
-		# if(smodel=="dome")
+		if(smodel=="dome"){
+			va <- rep(NA, length(age))
+			for(a in 1:length(age)){
+				if(a <= sel2) va[a] <- 1.0/(1.0+(exp(-log(19)*((age[a]-sel1)/(sel2-sel1)))))
+				if(a > sel2) va[a] <- exp(-(age[a]-sel2)^2/(2*dome_sd^2))
+			}
+		}
 		#todo  add option for survey selectivy (CIE review request.)
 		lx <- exp(-m*(age-min(age)))
 		lx[max(age)] <- lx[max(age)]/(1.0-exp(-m))
