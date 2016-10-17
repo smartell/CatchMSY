@@ -93,7 +93,8 @@ sir.sid <- function(sID,selex=FALSE,ncores=1)
 		sID$wts    <- exp(-(sID$nll + sID$prior))
 		sID$ML <- plyr::ldply(cmsy, function(x){c("ML"=x[['ML']])})
 		sID$LF <- plyr::ldply(cmsy, function(x){c("LF"=x[['LF']])})
-		sID$spr <- plyr::ldply(cmsy, function(x){c("spr"=x[['spr']])})
+		sID$spr_msy <- plyr::ldply(cmsy, function(x){c("spr_msy"=x[['spr_msy']])})
+		sID$spr_t <- plyr::ldply(cmsy, function(x){c("spr_t"=x[['spr_t']])})
 
 		## non-statistical criterion - sample combinations that meet criterion
 		sID$idx    <- which(sID$code==0)

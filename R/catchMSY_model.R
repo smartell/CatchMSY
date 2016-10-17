@@ -78,7 +78,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		bo     <- ro * phie
 		so     <- reck/phie
 		beta   <- (reck-1.0)/bo
-		spr    <- phif/phie
+		spr_msy    <- phif/phie
 		dre.df <- ro/(reck-1.0)*phie/phif^2*dphie.df
 
 		# runAgeStructuredModel
@@ -92,6 +92,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		N    <- C <- matrix(nrow=length(year),ncol=length(age))
 		N[1,]<- ro*lx
 		ft   <- vector("numeric",length=length(year))
+		spr_t <- vector("numeric",length=length(year))
 		bpls <- vector("numeric",length=length(year))
 		apo  <- age[-min(age)]
 		amo  <- age[-max(age)]
@@ -99,6 +100,17 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		for (i in 1:nyr) 
 		{
 			ft[i]	   <- getFt(chat[i],m,va,wa,N[i,])
+
+			lt <- vector("numeric", length=length(age))
+			lt[1] <- 1.0
+			zat  <- m + ft[i]*va
+			sat  <- exp(-zat)
+			for(aa in age){
+				if(aa > min(age)) lt[aa] <- lt[aa-1] * sat[aa-1]
+				if(aa==max(age)) lt[aa] <- lt[aa]/(1-sat)
+			}
+			spr_t <- sum(lt*fa)/phie
+			
 			st         <- exp(-m-ft[i]*va)
 			ssb        <- sum(N[i,]*fa)
 			# spls       <- exp(-m-ft[i]*va[nage])
@@ -270,10 +282,11 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		out <- list(code=code,
 		            bo = bo, h=steep,
 		            wa = wa, 
-		            reck = reck,spr = spr,
+		            reck = reck,spr_msy = spr_msy,
+		            spr_t = spr_t, 
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF, spr=spr)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF)
 		return(out)
 	})
 }
