@@ -107,10 +107,11 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			sat  <- exp(-zat)
 			for(aa in age){
 				if(aa > min(age)) lt[aa] <- lt[aa-1] * sat[aa-1]
-				if(aa==max(age)) lt[aa] <- lt[aa]/(1-sat)
+				if(aa==max(age)) lt[aa] <- lt[aa]/(1-sat[aa])
 			}
-			spr_t <- sum(lt*fa)/phie
-			
+			spr_t[i] <- sum(lt*fa)/phie
+			rm(lt)
+
 			st         <- exp(-m-ft[i]*va)
 			ssb        <- sum(N[i,]*fa)
 			# spls       <- exp(-m-ft[i]*va[nage])
