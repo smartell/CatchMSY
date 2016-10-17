@@ -288,7 +288,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 
 		out <- list(code=code,
 		            bo = bo, h=steep,
-		            wa = wa, 
+		            wa = wa, va=va, 
 		            reck = reck,spr_msy = spr_msy,
 		            spr_t = spr_t, 
 		            nll=sum(nll,na.rm=TRUE),
