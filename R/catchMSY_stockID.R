@@ -70,6 +70,7 @@ new_sID <- function(id  = "Stock Label",
 	S$sel1 <- 2.0
 	S$sel2 <- 5.0
 	S$smodel <- smodel
+	S$dome_sd <- 25 
 
 	# population parameters starting values
 	S$m    <- m
