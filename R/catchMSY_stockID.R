@@ -11,6 +11,13 @@
 #' @param ah age at 50\% maturity
 #' @param gh standard deviation in age at 50\% maturity
 #' @param dfile Name of file containing time series data
+#' @param m natural mortality
+#' @param fmsy fishing mortality at maximum sustainable yield
+#' @param msy maximum sustainable yield
+#' @param binwidth bin width for length composition data
+#' @param la.cv coefficient of variation for length-at-age curve
+#' @param sigma_r standard deviation for recruitment variation
+#' @param smodel "logistic" to specify logistic selectivity curve, "dome" to specify dome-shaped selectivity curve
 #' @return A template for a stock class object.
 #' @details This function returns a list object containing all the necessary
 #'          information to run the catchMSY routines.  
@@ -36,7 +43,7 @@ new_sID <- function(id  = "Stock Label",
 					binwidth = 1,
 					la.cv=0.1,
 					sigma_r=0,
-					smodel="asymptotic",
+					smodel="logistic",
 					dfile="")
 {
 	S     <- list()
@@ -58,8 +65,10 @@ new_sID <- function(id  = "Stock Label",
 	S$gh   <- gh
 
 	# selectivity parameters
-	S$sel50 <- 2.0
-	S$sel95 <- 5.0
+	## if smodel=="logistic", sel1=age at 50% selectivity, sel2=age at 95% selectivity
+	## if smodel=="dome", sel1=age at 50%selectivity for young fish, sel2=age at 50% selectivity for old fish
+	S$sel1 <- 2.0
+	S$sel2 <- 5.0
 	S$smodel <- smodel
 
 	# population parameters starting values
