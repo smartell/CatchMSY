@@ -74,8 +74,8 @@ sir.sid <- function(sID,selex=FALSE,ncores=1)
 				sID$fmsy <- s[2]
 				sID$msy  <- s[3]
 				if(selex==TRUE & sID$smodel=="logistic"){
-					sID$sel1 <- S[i,4]
-					sID$sel2 <- S[i,4]+1
+					sID$sel1 <- s[4]
+					sID$sel2 <- s[4]+1
 				}
 				if(selex==TRUE & sID$smodel=="dome") warning("Not programmed to estimate dome-shaped selectivity parameters")
 				return(catchMSYModel(sID))
