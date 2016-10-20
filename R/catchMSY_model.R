@@ -242,8 +242,9 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 
 				## richards and schnute -- L.8 & L.11
 				## multivariate logistic
-				lc_resid <- t(sapply(il, function(x) log(.qobs[x,]) - log(.qexp[x,]) - (1/Aprime)*sum(log(.qobs[x,]) - log(.qexp[x,]))))
-				loglike <- sapply(il, function(x) (1/2)*log(Aprime) - (Aprime-1)*((1/2)*log(2*pi) + log(.sd[x])) - (1/(2*.sd[x]^2))*sum(unlist(lc_resid[x,])^2))
+				lc_resid <- sapply(il, function(x) log(.qobs[x,]) - log(.qexp[x,]) - (1/Aprime)*sum(log(.qobs[x,]) - log(.qexp[x,])))
+				tresid <- t(lc_resid)
+				loglike <- sapply(il, function(x) (1/2)*log(Aprime) - (Aprime-1)*((1/2)*log(2*pi) + log(.sd[x])) - (1/(2*.sd[x]^2))*sum(unlist(tresid[x,])^2))
 				nll[3] <- -sum(loglike)
 
 				
@@ -316,7 +317,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,
-		            biomass_resid=biomass_resid, index_resid=index_resid, lc_resid=t(lc_resid), ml_resid=ml_resid)
+		            biomass_resid=biomass_resid, index_resid=index_resid, lc_resid=lc_resid, ml_resid=ml_resid)
 		return(out)
 	})
 }
