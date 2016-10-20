@@ -97,6 +97,10 @@ sir.sid <- function(sID,selex=FALSE,ncores=1)
 		sID$LF <- plyr::ldply(cmsy, function(x){c("LF"=x[['LF']])})
 		sID$spr_msy <- plyr::ldply(cmsy, function(x){c("spr_msy"=x[['spr_msy']])})
 		sID$spr_t <- plyr::ldply(cmsy, function(x){c("spr_t"=x[['spr_t']])})
+		sID$biomass_resid <- plyr::ldply(cmsy, function(x){c("biomass_resid"=x[['biomass_resid']])})
+		sID$index_resid <- plyr::ldply(cmsy, function(x){c("index_resid"=x[['index_resid']])})
+		sID$lc_resid <- plyr::ldply(cmsy, function(x){c("lc_resid"=x[['lc_resid']])})
+		sID$ml_resid <- plyr::ldply(cmsy, function(x){c("ml_resid"=x[['ml_resid']])})
 
 		## non-statistical criterion - sample combinations that meet criterion
 		sID$idx    <- which(sID$code==0)
