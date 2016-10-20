@@ -168,7 +168,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		# STATISTICAL CRITERION                        #
 		#----------------------------------------------#
 		nll <- rep(0,length=4) ## fit to index, biomass, length comp, mean length
-		Q   <- 	Qp <- LF <- ML <- NULL
+		Q   <- 	Qp <- LF <- ML <- biomass_resid <- index_resid <- lc_resid <- ml_resid <- NULL
 		# Must first pass the non-statistical criterion.
 		if( code == 0 ){
 
@@ -208,6 +208,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					if(length(.it)>1){
 						.zt    <- log(.it) - log(bt[ii])
 						.zbar  <- mean(.zt)
+						index_resid <- .zt - .zbar
 						nll[1] <- -1.0*sum(dnorm(.zt,.zbar,.se,log=TRUE))
 					}
 					else{
@@ -223,6 +224,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					.btobs    <- log(data$biomass[ii])
 					.bt    <- log(bt[ii])
 					.se    <- data$biomass.lse[ii]
+					biomass_resid <- .btobs - .bt
 					nll[2] <- -1.0*sum(dnorm(.btobs,.bt,.se,log=TRUE))
 				}
 			}
@@ -231,19 +233,38 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 			# Size comp likelihood here
 			if(any(grepl("lc.", colnames(data)))){
 				lc <- data[,grep("lc.", colnames(data))]
+				.sd <- data[,grepl("lencomp_sd", colnames(data))]
 				il <- which(is.na(rowSums(lc))==FALSE)
-				.qobs <- lc
+				tlc <- lc + 1e-20
+				.qobs <- tlc/rowSums(tlc)
 				.qexp <- t(Qp)
+				Aprime <- ncol(lc)
+
+				## richards and schnute -- L.8 & L.11
+				## multivariate logistic
+				lc_resid <- t(sapply(il, function(x) log(.qobs[x,]) - log(.qexp[x,]) - (1/Aprime)*sum(log(.qobs[x,]) - log(.qexp[x,]))))
+				loglike <- sapply(il, function(x) (1/2)*log(Aprime) - (Aprime-1)*((1/2)*log(2*pi) + log(.sd[x])) - (1/(2*.sd[x]^2))*sum(unlist(lc_resid[x,])^2))
+				nll[3] <- -sum(loglike)
+
 				
-				dmult <- function(log_theta, n, obs, pred){
-					theta <- exp(log_theta)
-					# like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
-					loglike <- lgamma(n+1) - sum(lgamma(n*obs+1)) + lgamma(theta*n) - lgamma(n+theta*n) + sum(lgamma(n*obs+theta*n*pred) - lgamma(n*theta*pred))
-					nll <- -loglike
-					return(nll)
-				}
-				nll_lc <- sapply(il, function(x) optimize(dmult, interval=c(log(1e-20),log(10)), n=sum(.qobs[x,]), obs=.qobs[x,]/sum(.qobs[x,]), pred=.qexp[x,])$objective)
-				nll[3] <- sum(nll_lc)
+				## dirichlet-multinomial
+				## not ideal due to optimization within SIR algorithm
+				## effective sample size estimated to be very low due to random draws from priors of FMSY and MSY far from the truth
+				# dmult <- function(log_theta, n, obs, pred){
+				# 	theta <- exp(log_theta)
+				# 	# like <- (gamma(n+1)/prod(gamma(n*obs + 1)))*(gamma(theta*n)/gamma(n+theta*n))*prod((gamma(n*obs + theta*n*pred)/gamma(theta*n*pred)))
+				# 	loglike <- lgamma(n+1) - sum(lgamma(n*obs+1)) + lgamma(theta*n) - lgamma(n+theta*n) + sum(lgamma(n*obs+theta*n*pred) - lgamma(n*theta*pred))
+				# 	nll <- -loglike
+				# 	return(nll)
+				# }
+				# nll_lc <- sapply(il, function(x) optimize(dmult, interval=c(log(1e-20),log(10)), n=sum(.qobs[x,]), obs=.qobs[x,]/sum(.qobs[x,]), pred=.qexp[x,])$objective)
+				# nll <- sum(nll_lc)
+
+
+
+				## multinomial - can brute force it to work by setting ESS around 10
+				# ll_lc <- sapply(il, function(x) dmultinom(as.numeric(.qobs[x,]/sum(.qobs[x,]))*1, prob=.qexp[x,], log=TRUE))
+				# nll[3] <- -sum(ll_lc)
 			}
 
 			# Mean length likelihood
@@ -252,6 +273,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 					ii     <- which(!is.na(data$meanlength))
 					.mlobs    <- log(data$meanlength[ii])
 					.mlexp    <- log(ML[ii])
+					ml_resid <- .mlobs - .mlexp
 					.se    <- data$meanlength.lse[ii]
 					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
 				}
@@ -293,7 +315,8 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            spr_t = spr_t, 
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
-		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF)
+		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,
+		            biomass_resid=biomass_resid, index_resid=index_resid, lc_resid=lc_resid, ml_resid=ml_resid)
 		return(out)
 	})
 }
