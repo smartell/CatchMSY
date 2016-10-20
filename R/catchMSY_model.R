@@ -316,7 +316,7 @@ catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
 		            nll=sum(nll,na.rm=TRUE),
 		            prior=sum(pvec,na.rm=TRUE),
 		            dt=dt,bt=bt,sbt=sbt,ft=ft,Q=Q,Qp=Qp,ML=ML,LF=LF,
-		            biomass_resid=biomass_resid, index_resid=index_resid, lc_resid=lc_resid, ml_resid=ml_resid)
+		            biomass_resid=biomass_resid, index_resid=index_resid, lc_resid=t(lc_resid), ml_resid=ml_resid)
 		return(out)
 	})
 }
