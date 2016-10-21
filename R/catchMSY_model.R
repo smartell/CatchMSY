@@ -10,10 +10,10 @@
 #' equation \eqn{C =  F/Z*(1-exp(-Z))*B}, for \code{F}. 
 #'
 #' @param sID Stock ID object
-#' @param selex Boolean flag to turn off search across sel1 (sel50) parameter. 
 #' Set to TRUE when including the prior on sel1 (sel50) 
 #' @param nlSearch Boolean flag to turn off non-statistical criterion for 
 #' non-linear search. Set to TRUE when using non-linear search routines.
+#' @param selex Boolean flag to turn off search across sel1 (sel50) parameter. 
 #' @export
 catchMSYModel <- function(sID,nlSearch=FALSE,selex=FALSE,)
 {

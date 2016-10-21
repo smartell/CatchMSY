@@ -1,7 +1,7 @@
 #' Generate prior samples for importance sampling.
 #' @param sID species ID list
-#' @param selex default FALSE - only samples from parameters m, fmsy, and msy. Set to TRUE to also sample sel50
 #' @param n number of samples to generate
+#' @param selex default FALSE - only samples from parameters m, fmsy, and msy. Set to TRUE to also sample sel50
 #' @description Draw random samples from specified parameter ranges in the 
 #' stock ID object.
 #' @export
@@ -31,9 +31,9 @@ sample.sid <- function(sID,n=100,selex=FALSE)
 
 #' Importance Sampling
 #' @param sID Stock ID object
-#' @param selex Boolean flag to turn off search across sel1 (sel50) parameter. 
 #' Set to TRUE when including the prior on sel1 (sel50).
 #' @param nc  Number of cores for parrallel processing.
+#' @param selex Boolean flag to turn off search across sel1 (sel50) parameter. 
 #' @export
 sir.sid <- function(sID,ncores=1,selex=FALSE)
 {
