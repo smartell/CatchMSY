@@ -89,6 +89,7 @@ p <- p + geom_line(aes(group=id),size=0.1,alpha=0.1)
 p <- p + labs(x="Year",y="Depletion") + ylim(0,1)
 print(p + .THEME)
 
+### use S$idx to show the samples chosen from both "code" - which narrows samples down based on catch data only, and "nll" from likelihood fits to other indices
 ## MSY histogram
 par(mfrow=c(1,1))
 xlim <- c(0, hake$dfPriorInfo$par2[3]*1.2)
