@@ -25,10 +25,21 @@ hake$sel2 <- 5.0 ## age at 95% selectivity
 # Generate random samples from dfPriorInfo
 nsamp <- 500
 hake <- sample.sid(sID=hake,n=nsamp)
+
+## catch data only
+hake0 <- hake
+hake0$data <- hake$data[,c("year","catch")]
+
+## sampling space
 pairs(hake$S,gap=0, pch=19)
 
-# Now run sir routine
+# Now run sir routine -- all data 
 hake <- sir.sid(hake,ncores=1)
+
+## catch-only  model
+hake0 <- sir.sid(hake0,ncores=1)
+
+## narrow down from catch data only (will be same for hake and hake0)
 pairs(hake$S,gap=0,col=unlist(hake$code+1),pch=19)
 
 # Add Bo and h to samples
@@ -84,5 +95,7 @@ xlim <- c(0, hake$dfPriorInfo$par2[3]*1.2)
 ylim <- c(0, nsamp/5)
 hist(hake$S[,"msy"], col="gray", lty="blank", xlim=xlim, ylim=ylim, xlab="MSY", ylab="Frequency", main="")
 par(new=TRUE)
-hist(hake$S[hake$idx,"msy"], col="#AA000050", lty="blank", xlim=xlim, ylim=ylim, xlab="", ylab="", main="")
-legend("topright", legend=c("Sampling space", "Catch only"), pch=15, col=c("gray", "#AA000050"), cex=2)
+hist(hake$S[hake0$idx,"msy"], col="#AA000050", lty="blank", xlim=xlim, ylim=ylim, xlab="", ylab="", main="")
+par(new=TRUE)
+hist(hake$S[hake$idx,"msy"], col="#0000AA50", lty="blank", xlim=xlim, ylim=ylim, xlab="", ylab="", main="")
+legend("topright", legend=c("Sampling space", "Catch only", "Catch + index"), pch=15, col=c("gray", "#AA000050", "#0000AA50"), cex=2)
