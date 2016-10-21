@@ -15,7 +15,7 @@
 #' @param nlSearch Boolean flag to turn off non-statistical criterion for 
 #' non-linear search. Set to TRUE when using non-linear search routines.
 #' @export
-catchMSYModel <- function(sID,selex=FALSE,nlSearch=FALSE)
+catchMSYModel <- function(sID,nlSearch=FALSE,selex=FALSE,)
 {
 	with(sID,{
 

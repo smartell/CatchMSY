@@ -5,7 +5,7 @@
 #' @description Draw random samples from specified parameter ranges in the 
 #' stock ID object.
 #' @export
-sample.sid <- function(sID,selex=FALSE,n=100)
+sample.sid <- function(sID,n=100,selex=FALSE)
 {
 	within(sID,{
 		S <- NULL
@@ -35,7 +35,7 @@ sample.sid <- function(sID,selex=FALSE,n=100)
 #' Set to TRUE when including the prior on sel1 (sel50).
 #' @param nc  Number of cores for parrallel processing.
 #' @export
-sir.sid <- function(sID,selex=FALSE,ncores=1)
+sir.sid <- function(sID,ncores=1,selex=FALSE)
 {
 	with(sID,{
 		n    <- dim(S)[1]
