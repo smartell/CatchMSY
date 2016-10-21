@@ -15,7 +15,7 @@
 #' non-linear search. Set to TRUE when using non-linear search routines.
 #' @param selex Boolean flag to turn off search across sel1 (sel50) parameter. 
 #' @export
-catchMSYModel <- function(sID,nlSearch=FALSE,selex=FALSE,)
+catchMSYModel <- function(sID,nlSearch=FALSE,selex=FALSE)
 {
 	with(sID,{
 
