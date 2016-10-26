@@ -1,13 +1,13 @@
 Package: catchMSY
 Type: Package
 Title: Catch-MSY method for estimating MSY-based reference points
-Version: 0.1.2
-Date: 2015-10-11
-Authors@R: person("Steven", "Martell", email = "martell.steve@gmail.com",role = c("aut", "cre"))
+Version: 1.0.0
+Date: 2016-10-26
+Authors@R: person("Steven", "Martell", email = "martell.steve@gmail.com",role = c("aut", "cre")), person("Merrill", "Rudd", email="merrillrudd@gmail.com",role="aut")
 Maintainer: Steven Martell <martell.steve@gmail.com>
 Description: This package contains several scripts and routines for conducting
-    fisheris stock assessment based on the simple Catch-MSY method
-    developed by  Martell and Froese (2012).
+    fisheries stock assessment based on the simple Catch-MSY method
+    developed by  Martell and Froese (2012). Updated from the simple Catch-MSY method, the method now has an underlying age-structured model, can integrate an abundance index, biomass survey, mean length time series, and/or length composition data, and estimates management-oriented parameters (MSY and Fmsy instead of Schaefer r and K).
 License: GPL (>= 2)
 Imports:
     tidyr,
