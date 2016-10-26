@@ -109,7 +109,8 @@ sir.sid <- function(sID,ncores=1,selex=FALSE)
 		ic <- which(sID$nll!=0)
 		if( length(ic) > 0 ){
 			prb <- sID$wts[ic,1]
-			sID$idx  <- tryCatch(sample(ic,length(ic),replace=TRUE,prob=prb), error=function(e) NULL)
+			idx_new  <- tryCatch(sample(ic,length(ic),replace=TRUE,prob=prb), error=function(e) NULL)
+			if(all(is.null(idx_new))==FALSE) sID$idx <- idx_new
 		}
 		return(sID)
 	})

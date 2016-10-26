@@ -1,5 +1,6 @@
 # Demo using the Nambibian hake data.
 # load the catchMSY library
+devtools::install_github("smartell/catchMSY", build.vignettes=TRUE, dependencies=TRUE)
 library(catchMSY)
 library(ggplot2)
 .THEME <- theme_bw(20)
