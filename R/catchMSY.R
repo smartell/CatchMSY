@@ -2,7 +2,7 @@
 #'
 #' @description \packageDESCRIPTION{catchMSY}
 #' @author \packageAuthor{catchMSY}
-#' @keywords catchMSY
+#' @keywords age-structured, integrated, catchMSY, management-oriented parameters
 #' 
 #' @section catchMSY functions:
 #' The foo functions ...
