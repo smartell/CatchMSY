@@ -4,16 +4,16 @@
 \alias{catchMSYModel}
 \title{Age-structured Catch-MSY model}
 \usage{
-catchMSYModel(sID, selex = FALSE, nlSearch = FALSE)
+catchMSYModel(sID, nlSearch = FALSE, selex = FALSE)
 }
 \arguments{
-\item{sID}{Stock ID object}
-
-\item{selex}{Boolean flag to turn off search across sel50 parameter. 
-Set to TRUE when including the prior on sel50.}
+\item{sID}{Stock ID object
+Set to TRUE when including the prior on sel1 (sel50)}
 
 \item{nlSearch}{Boolean flag to turn off non-statistical criterion for 
 non-linear search. Set to TRUE when using non-linear search routines.}
+
+\item{selex}{Boolean flag to turn off search across sel1 (sel50) parameter.}
 }
 \description{
 An age-structured assessment model paramterized using MSY and FMSY  

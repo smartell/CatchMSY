@@ -4,7 +4,7 @@
 \alias{solver}
 \title{Envoke a non-linear search routine to estimate model parameters.}
 \usage{
-solver(sID)
+solver(sID, selex = FALSE)
 }
 \value{
 sID object

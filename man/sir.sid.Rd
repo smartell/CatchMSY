@@ -4,13 +4,13 @@
 \alias{sir.sid}
 \title{Importance Sampling}
 \usage{
-sir.sid(sID, selex = FALSE, ncores = 1)
+sir.sid(sID, ncores = 1, selex = FALSE)
 }
 \arguments{
-\item{sID}{Stock ID object}
+\item{sID}{Stock ID object
+Set to TRUE when including the prior on sel1 (sel50).}
 
-\item{selex}{Boolean flag to turn off search across sel50 parameter. 
-Set to TRUE when including the prior on sel50.}
+\item{selex}{Boolean flag to turn off search across sel1 (sel50) parameter.}
 
 \item{nc}{Number of cores for parrallel processing.}
 }

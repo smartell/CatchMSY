@@ -4,14 +4,14 @@
 \alias{sample.sid}
 \title{Generate prior samples for importance sampling.}
 \usage{
-sample.sid(sID, selex = FALSE, n = 100)
+sample.sid(sID, n = 100, selex = FALSE)
 }
 \arguments{
 \item{sID}{species ID list}
 
-\item{selex}{default FALSE - only samples from parameters m, fmsy, and msy. Set to TRUE to also sample sel50}
-
 \item{n}{number of samples to generate}
+
+\item{selex}{default FALSE - only samples from parameters m, fmsy, and msy. Set to TRUE to also sample sel50}
 }
 \description{
 Draw random samples from specified parameter ranges in the 

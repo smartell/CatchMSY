@@ -6,7 +6,8 @@
 \usage{
 new_sID(id = "Stock Label", age = 1:10, linf = 100, winf = 5,
   vbk = 0.2, to = 0, a = 5e-06, b = 3, ah = 2, gh = 0.2, m = 0.2,
-  fmsy = 0.15, msy = 1, binwidth = 1, la.cv = 0.1, dfile = "")
+  fmsy = 0.15, msy = 1, binwidth = 1, la.cv = 0.1, sigma_r = 0,
+  smodel = "logistic", dfile = "")
 }
 \arguments{
 \item{id}{Name of Stock}
@@ -28,6 +29,20 @@ new_sID(id = "Stock Label", age = 1:10, linf = 100, winf = 5,
 \item{ah}{age at 50\% maturity}
 
 \item{gh}{standard deviation in age at 50\% maturity}
+
+\item{m}{natural mortality}
+
+\item{fmsy}{fishing mortality at maximum sustainable yield}
+
+\item{msy}{maximum sustainable yield}
+
+\item{binwidth}{bin width for length composition data}
+
+\item{la.cv}{coefficient of variation for length-at-age curve}
+
+\item{sigma_r}{standard deviation for recruitment variation}
+
+\item{smodel}{"logistic" to specify logistic selectivity curve, "dome" to specify dome-shaped selectivity curve}
 
 \item{dfile}{Name of file containing time series data}
 }
