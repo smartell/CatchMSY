@@ -269,13 +269,13 @@ catchMSYModel <- function(sID,nlSearch=FALSE,selex=FALSE)
 			}
 
 			# Mean length likelihood
-			if(any(grepl("meanlength", colnames(data)))){
-				if( any(!is.na(data$meanlength)) ) {
-					ii     <- which(!is.na(data$meanlength))
-					.mlobs    <- log(data$meanlength[ii])
+			if(any(grepl("avgSize", colnames(data)))){
+				if( any(!is.na(data$avgSize)) ) {
+					ii     <- which(!is.na(data$avgSize))
+					.mlobs    <- log(data$avgSize[ii])
 					.mlexp    <- log(ML[ii])
 					ml_resid <- .mlobs - .mlexp
-					.se    <- data$meanlength.lse[ii]
+					.se    <- data$avgSize.lse[ii]
 					nll[4] <- -1.0*sum(dnorm(.mlobs,.mlexp,.se,log=TRUE))
 				}
 			}
