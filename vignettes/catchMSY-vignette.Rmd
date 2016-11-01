@@ -1,0 +1,229 @@
+---
+title: 'Catch-MSY Example: Namibian Hake'
+author: "Steve Martell and Merrill Rudd"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+vignette: |
+  %\VignetteIndexEntry{Namibian Hake Example} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+
+##Summary
+
+The `catchMSY` package is intended to be used to determine MSY-based reference points.
+
+The catchMSY package is based on the initial work for Martell and Froese (2012). "A simple method for estimating MSY from catch and resilience".
+
+This is a simple example based on the Namibian hake dataset published in the ecoloigical detective (Hilborn and Mangle, 1997).
+
+In this vignette I use the Namibian Hake as an example of how to use the catchMSY package using:
+
+  1. only catch data
+  2. catch data and relative abundance
+  3. catch data and length information
+  
+## Installing and loading package
+
+Install the R package from github using devtools:
+```{r load_packages, message=FALSE}
+devtools::install_github("smartell/catchMSY")
+```
+
+Then load the library.
+```{r load_libraries, message=FALSE}
+library(catchMSY)
+```
+
+
+## stockID object (sID)
+First, we'll have a look at the input data and the Stock ID object `sID`. To create a new stock ID object we use the  function `new_sID`. The data for this example were taken from chapter 10 in the Ecological Detective (Hilborn and Mangel, 1997). 
+
+```{r load_data}
+  data(NamibianHake)
+	names(hake)
+  head(hake$data)
+```
+
+There are default values set in `new_sID` for setting up a new `sID` object. Make sure that you adjust the values in the `sID` object that match the life history for the stock you are analyzing.
+For example, you can change the age at 50% selectivity `sel1` and age at 95% selectivity `sel2` for the hake example by adjusting the values in the list called `hake`:
+
+```{r}
+  # Change selectivity
+  hake$sel1 <- 4.0
+  hake$sel2 <- 5.0
+```
+
+Given a valid `sID' object, you can quickly run the age-structured model and preview the results.
+
+```{r}
+ hakeOM <- catchMSYModel(hake)
+ str(hakeOM)
+```
+
+
+##Setting priors
+
+The `catchMSY` package automatically defines priors on natural mortality (M; par1), fishing mortality at maximum sustainable yield (Fmsy; par2), and maximum sustainable yield (MSY; par3).
+
+```{r}
+  hake$dfPriorInfo
+```
+
+The distribution and/or values defining the prior distribution can be adjusted for each parameter. 
+
+For example, you can adjust the mean and standard deviation of the lognormal prior on natural mortality to include uncertainty from the assumed mean in the hake model. 
+
+```{r}
+# Set parameter sampling frame
+hake$dfPriorInfo$dist[1] = "lnorm"
+hake$dfPriorInfo$par1[1] = log(hake$m)
+hake$dfPriorInfo$par2[1] = 0.05 * hake$m
+```
+
+The prior on MSY can be set as a function of the natural mortality in the hake model.
+```{r}
+hake$dfPriorInfo$dist[2] = "unif"
+hake$dfPriorInfo$par1[2] = 0.20 * hake$m
+hake$dfPriorInfo$par2[2] = 1.50 * hake$m
+```
+
+We set the prior on MSY as a uniform distribution, assuming the true MSY lies somewhere between the 5th and 95th percentiles of the observed catch.
+```{r}
+hake$dfPriorInfo$dist[3] = "unif"
+hake$dfPriorInfo$par1[3] = quantile(hake$data$catch,0.05)
+hake$dfPriorInfo$par2[3] = quantile(hake$data$catch,0.95)
+```
+
+There is also an option of setting a prior distribution on the age at 50% selectivity. As an example, we set this up similar to the prior on natural mortality:
+```{r}
+  ## age at 50% selectivity
+selexPriorInfo <- data.frame("id"=4, "dist"="lnorm", "par1"=log(hake$sel1), "par2"=0.1*hake$sel1, "log"=TRUE, "stringAsFactors"=FALSE)
+hake$dfPriorInfo <- rbind.data.frame(hake$dfPriorInfo, selexPriorInfo)
+hake$dfPriorInfo
+```
+
+## Generate random samples
+
+Once the life history and prior information are set up in the object `sID`, use the function `sample.sid` to generate random samples from the prior distributions. Specifying `selex=TRUE` includes the 4th parameter, age at 50% selectivity, in the list of parameters to draw samples from the prior distribution. 
+```{r, tidy=TRUE, echo=FALSE}
+# set seed for samples
+set.seed(123)
+```
+```{r, tidy=TRUE}
+  # Generate random samples from dfPriorInfo
+hake <- sample.sid(sID=hake, selex=TRUE, n=1000)
+colnames(hake$S) <- c("M", "Fmsy", "MSY", "sel50")
+head(hake$S)
+```
+```{r, echo=FALSE}
+par(mfrow=c(1,1))
+pairs(hake$S, gap=0, pch=20, cex=0.5)
+```
+
+## Catch-only  model
+
+The dataframe `data` in the object `sID` should only include year and catch when running the catch-only model.
+```{r, tidy=TRUE}
+ M0 <- hake
+M0$data <- M0$data[,c("year", "catch")]
+head(M0$data)
+```
+
+Because the object `M0` already has the dataframe `S` with the random draws from the prior distributions for each parameter, we can go ahead and run the model. This will loop through each of the sampled parameter combinations and test whether those values could have led to an extant population via the age-structured model. 
+```{r, tidy=TRUE}
+  M0 <- sir.sid(sID=M0, selex=TRUE, ncores=2)
+```
+
+The catch-only model removes the combinations of parameter values that do not lead to an extant population (i.e. that do not pass the non-statistical criteria).
+The black points in the scatterplot are the parameter combinations that lead to an extant population; the different color points represent parameter combinations that failed the non-statistical criteria (population crashed).
+
+```{r, echo=FALSE}
+# catch-only scatterplot 
+pairs(M0$S, gap=0, col=as.numeric(unlist(M0$code))+1, pch=20)
+```
+
+## Catch and abundance index
+
+To integrate an abundance index into the assessment method, we specify two extra columns in the `data` data frame within the `sID` object - "index", representing the abundance index in each year, and "index.lse", representing some assumed value for the log standard error for the observed abundance index in each year. 
+```{r}
+M1 <- hake
+# year, catch, and index
+M1$data <- M1$data[,c("year","catch","index","index.lse")]
+```
+
+To include a biomass survey instead of an abundance index, the column names must be "biomass" and "biomass.lse", with  NAs in years with no data.
+
+You can then run the model the same way as in the catch-only scenario. 
+```{r, tidy=TRUE}
+  M1 <- sir.sid(sID=M1, selex=TRUE, ncores=2)
+```
+
+The same as the catch-only model, each parameter combination must pass the non-statistical criteria. For each combination that passes, the model calculates a negative log likelihood between the observed and predicted values for the abundance index. The parameter combinations are then weighted by their fit between the observed and predicted data.
+
+```{r, tidy=TRUE}
+  head(M1$nll)
+```
+
+The below pairs plot uses red points to indicate combinations that would have been removed if only catch data were included in the model. The light blue points indicate parameter combinations that are discarded based on their poor fit to the abundance index. This leaves a much narrower range of possible values for each parameter (i.e. more certainty).
+
+
+```{r, echo=FALSE}
+# catch and index scatterplot
+M1_cols <- rep(1, 1000)
+M1_cols[which(1:1000 %in% unique(M1$idx)==FALSE)] <- "steelblue"
+M1_cols[which(as.numeric(unlist(M0$code))>0)] <- "red"
+pairs(M1$S, gap=0, col=M1_cols, pch=20)
+```
+
+
+## Catch and length information
+
+No length information is available in the Namibian hake dataset. We can use the predicted length information (mean length and length composition) from the function `catchMSYModel` as pseudo-data to demonstrate the new routines to fit to a mean length time series or length composition data.
+```{r, echo=FALSE}
+hakeOM <- catchMSYModel(hake)
+ML <- hakeOM$ML
+LC <- t(hakeOM$LF)
+par(mfrow=c(1,2))
+  plot(ML, pch=17, cex=2, xlab="Year", ylab="Mean length (cm)", type="o", ylim=c(0, max(ML, na.rm=TRUE)*1.1))
+  barplot(LC[nrow(LC),1:ncol(LC)], xlab="Length bin (1 cm)", ylab="Frequency", xaxt="n")
+  axis(1, at=pretty(c(1,ncol(LC))))
+```
+
+
+To fit to the mean length time series, simply add new columns to the `data` data frame in the `sID` object in the same way the "index" and "index.lse" time series were added. 
+```{r}
+M2 <- hake
+# year, catch, and index
+M2$data <- cbind(M2$data[,c("year","catch")], "avgSize"=ML, "avgSize.lse"=rep(0.2, length(ML)))
+M2 <- sir.sid(sID=M2, selex=TRUE, ncores=2)
+```
+
+In the below pairs plot, the red points indicate the parameter values that are discarded due to the catch data alone, and dark blue points indicate the parameter values that are discarded based on their poor fit to the mean length data. There are not many dark blue points, indicating the mean length data was not as informative for the estimated parameters as the abundance index.
+
+```{r, echo=FALSE}
+# catch and index scatterplot
+M2_cols <- rep(1, 1000)
+M2_cols[which(1:1000 %in% unique(M2$idx)==FALSE)] <- "blue"
+M2_cols[which(as.numeric(unlist(M0$code))>0)] <- "red"
+pairs(M2$S, gap=0, col=M2_cols, pch=20)
+```
+
+To set up the length composition data, add a column called "lencomp_sd" right after the catch data in the `data` dataframe of the `sID` object. Then add columns with the number of individuals captured in each length bin in each year, designated as LC_ plus the upper value of the length bin as the column name (example: LC_1, LC_2, etc.)
+```{r}
+M3 <- hakeOM
+M3$data <- cbind(M3$data[,c("year","catch")], "lencomp_sd"=rep(0.2, length(M0$data$year)), LC)
+head(M3$data)
+```
+
+In general, the sampling-importance-resampling (SIR) algorithm is not efficient for fitting length composition data in the catch-MSY model. The proposed values for Fmsy and MSY produce an expected population that is too far from the truth to predict a length composition shape that is close enough to the truth. Therefore, the likelihood values are very low, resulting in none of the parameter combinations chosen as possibilities in the SIR algorithm. In this case, length composition does not provide any additional information over the catch-only model. It is not currently recommended to fit the catch-MSY method with length composition data due to these issues with the SIR algorithm. 
+
+## References
+
+Hilborn, R. and Mangel, M. (1997). The ecological detective: confronting models with data. Princeton Univ Pr.
+
+Martell, S. and Froese, R. (2012). A simple method for estimating msy from catch and resilience. Fish and Fisheries.
+
